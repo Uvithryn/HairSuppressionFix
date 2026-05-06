@@ -1,0 +1,63 @@
+{
+    spdlog = {
+        links = "spdlog",
+        linkdirs = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\.xmake\.xmake\packages\s\spdlog\v1.15.2\732e1fb9578844feb56212d04a5902e7\lib]],
+        version = "v1.15.2",
+        static = true,
+        __requireconfs = {
+            configs = {
+                header_only = false,
+                std_format = true,
+                wchar = true
+            }
+        },
+        installdir = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\.xmake\.xmake\packages\s\spdlog\v1.15.2\732e1fb9578844feb56212d04a5902e7]],
+        license = "MIT",
+        sysincludedirs = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\.xmake\.xmake\packages\s\spdlog\v1.15.2\732e1fb9578844feb56212d04a5902e7\include]],
+        __enabled = true,
+        libfiles = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\.xmake\.xmake\packages\s\spdlog\v1.15.2\732e1fb9578844feb56212d04a5902e7\lib\spdlog.lib]],
+        __requirestr = "spdlog",
+        defines = {
+            "SPDLOG_COMPILED_LIB",
+            "SPDLOG_USE_STD_FORMAT",
+            "SPDLOG_WCHAR_TO_UTF8_SUPPORT"
+        },
+        envs = {
+            PATH = {
+                [[G:\SkyrimSE_MO2\tools\SKSE_Dev\.xmake\.xmake\packages\n\ninja\1.12.1\10253c39aca14760ae4382272800b680\bin]],
+                [[G:\SkyrimSE_MO2\tools\SKSE_Dev\.xmake\.xmake\packages\c\cmake\3.31.6-msvc6\10253c39aca14760ae4382272800b680\bin]]
+            }
+        }
+    },
+    directxtk = {
+        links = "DirectXTK",
+        linkdirs = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\.xmake\.xmake\packages\d\directxtk\24.2.0\9f8d620aace146e28fd114c01f5af23a\lib]],
+        version = "24.2.0",
+        static = true,
+        installdir = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\.xmake\.xmake\packages\d\directxtk\24.2.0\9f8d620aace146e28fd114c01f5af23a]],
+        sysincludedirs = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\.xmake\.xmake\packages\d\directxtk\24.2.0\9f8d620aace146e28fd114c01f5af23a\include]],
+        __enabled = true,
+        __requirestr = "directxtk",
+        libfiles = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\.xmake\.xmake\packages\d\directxtk\24.2.0\9f8d620aace146e28fd114c01f5af23a\lib\DirectXTK.lib]],
+        envs = {
+            PATH = {
+                [[G:\SkyrimSE_MO2\tools\SKSE_Dev\.xmake\.xmake\packages\n\ninja\1.12.1\10253c39aca14760ae4382272800b680\bin]],
+                [[G:\SkyrimSE_MO2\tools\SKSE_Dev\.xmake\.xmake\packages\c\cmake\3.31.6-msvc6\10253c39aca14760ae4382272800b680\bin]]
+            }
+        }
+    },
+    directxmath = {
+        installdir = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\.xmake\.xmake\packages\d\directxmath\2024.02\b43cee1705a040bdb171c586b0ad9685]],
+        license = "MIT",
+        sysincludedirs = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\.xmake\.xmake\packages\d\directxmath\2024.02\b43cee1705a040bdb171c586b0ad9685\include\directxmath]],
+        __enabled = true,
+        __requirestr = "directxmath",
+        version = "2024.02",
+        envs = {
+            PATH = {
+                [[G:\SkyrimSE_MO2\tools\SKSE_Dev\.xmake\.xmake\packages\n\ninja\1.12.1\10253c39aca14760ae4382272800b680\bin]],
+                [[G:\SkyrimSE_MO2\tools\SKSE_Dev\.xmake\.xmake\packages\c\cmake\3.31.6-msvc6\10253c39aca14760ae4382272800b680\bin]]
+            }
+        }
+    }
+}
