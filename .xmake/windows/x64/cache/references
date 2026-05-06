@@ -1,7 +1,0 @@
-{
-    packages = {
-        [[G:\SkyrimSE_MO2\tools\SKSE_Dev\.xmake\.xmake\packages\d\directxmath\2024.02\b43cee1705a040bdb171c586b0ad9685]],
-        [[G:\SkyrimSE_MO2\tools\SKSE_Dev\.xmake\.xmake\packages\d\directxtk\24.2.0\9f8d620aace146e28fd114c01f5af23a]],
-        [[G:\SkyrimSE_MO2\tools\SKSE_Dev\.xmake\.xmake\packages\s\spdlog\v1.15.2\732e1fb9578844feb56212d04a5902e7]]
-    }
-}
