@@ -9,5 +9,5 @@ I would have kept them separate, but both use the same hook.
 
 
 ## Requirements
-* [ClibDT - CommonLib Dev Toolkit](**https://cmake.org/**)
+* [ClibDT - CommonLib Dev Toolkit](https://www.nexusmods.com/skyrimspecialedition/mods/154240)
 	* Built with this tool
