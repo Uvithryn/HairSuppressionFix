@@ -27,7 +27,8 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	InitializeLog();
 	logger::info("{} v{}"sv, Plugin::NAME, Plugin::VERSION.string());
 
-	SKSE::AllocTrampoline(64);
+	SKSE::AllocTrampoline(256);
+
 	Hooks::Biped::Install();
 
 	return true;

@@ -2,7 +2,7 @@ set_xmakever('3.0.1')
 includes('lib/commonlibsse-ng')
 
 set_project('HairSuppressionFix')
-set_version('1.0.0')
+set_version('1.2.2')
 set_license('GPL-3.0')
 
 set_languages('c++23')
@@ -49,7 +49,7 @@ target('HairSuppressionFix')
     add_rules('commonlibsse-ng.plugin', {
         name        = 'HairSuppressionFix',
         author      = 'Uvithryn',
-        description = 'Suppresses a characters hair if an item occupies its corresponding armor slot.',
+        description = 'Suppresses character hair properly. This version includes Beard Mask Fix.',
         runtime     = runtime
     })
 
