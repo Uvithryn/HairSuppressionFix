@@ -1,24 +1,13 @@
-Hides beards when wearing items with slot 44.
+Hides hair when slots 31 (Hair) and 41 (Long Hair) are occupied by worn item(s). 
+Skyrim is supposed to do this on its own, but only looks at each armor item's first loaded ARMA record.
+Many wigs are built with one ARMA in slot 31 and another in slot 41, so without this fix, the game only 
+hides the main hair part, but not the LongHair part. With this fix, the whole hair model is hidden.
+
+Also carries over Exit-9B's Beard Mask Fix, which hides beards when wearing items with slot 44.
+
+I would have kept them separate, but both use the same hook.
+
 
 ## Requirements
-* [CMake](https://cmake.org/)
-	* Add this to your `PATH`
-* [Vcpkg](https://github.com/microsoft/vcpkg)
-	* Add the environment variable `VCPKG_ROOT` with the value as the path to the folder containing vcpkg
-* [Visual Studio Community 2022](https://visualstudio.microsoft.com/)
-	* Desktop development with C++
-
-## Register Visual Studio as a Generator
-* Open `x64 Native Tools Command Prompt`
-* Run `cmake`
-* Close the cmd window
-
-## Building
-```
-git clone https://github.com/Exit-9B/BeardMaskFix
-cd BeardMaskFix
-git submodule init
-git submodule update
-cmake --preset vs2022-windows
-cmake --build build --config Release
-```
+* [ClibDT - CommonLib Dev Toolkit](https://www.nexusmods.com/skyrimspecialedition/mods/154240)
+	* Built with this tool
