@@ -2,6 +2,7 @@
 
 #include "RE/B/BSContainer.h"
 #include "RE/B/BSPointerHandle.h"
+#include "RE/B/BSSimpleList.h"
 #include "RE/B/BSTEvent.h"
 #include "RE/B/BSTList.h"
 #include "RE/B/BSTSmartPointer.h"
@@ -14,6 +15,11 @@
 
 namespace RE
 {
+	namespace ActiveEffectFactory
+	{
+		struct CheckTargetArgs;
+	}
+
 	class Actor;
 	class ActiveEffect;
 	class BGSKeyword;
@@ -22,6 +28,7 @@ namespace RE
 	class MagicItem;
 	class TESBoundObject;
 	class TESObjectREFR;
+	struct Effect;
 
 	struct Effect;
 
@@ -46,6 +53,30 @@ namespace RE
 		};
 		static_assert(sizeof(ForEachActiveEffectVisitor) == 0x8);
 
+		class IPostCreationModification
+		{
+		public:
+			inline static constexpr auto RTTI = RTTI_MagicTarget__IPostCreationModification;
+
+			virtual ~IPostCreationModification();  // 00
+
+			// add
+			virtual void ModifyActiveEffect(ActiveEffect* a_effect) = 0;  // 01
+		};
+		static_assert(sizeof(IPostCreationModification) == 0x8);
+
+		class ResultsCollector
+		{
+		public:
+			MagicTarget*  target;       // 00
+			Actor*        caster;       // 08
+			MagicItem*    magicItem;    // 10
+			std::uint16_t immunities;   // 18
+			std::uint16_t nonTrivials;  // 1A
+			std::uint32_t pad1C;        // 1C
+		};
+		static_assert(sizeof(ResultsCollector) == 0x20);
+
 		struct SpellDispelData
 		{
 			MagicItem*                    spell;         // 00
@@ -58,27 +89,31 @@ namespace RE
 
 		struct AddTargetData
 		{
-			TESObjectREFR*             caster;          // 00
-			MagicItem*                 magicItem;       // 08
-			Effect*                    effect;          // 10
-			TESBoundObject*            source;          // 18
-			std::uint64_t              unk20;           // 20 - MagicCaster::PostCreationCallback
-			std::uint64_t              unk28;           // 28 - MagicTarget**
-			NiPoint3                   explosionPoint;  // 30
-			float                      magnitude;       // 3C
-			float                      unk40;           // 40
-			MagicSystem::CastingSource castingSource;   // 44
-			std::uint8_t               unk48;           // 48
-			bool                       dualCasted;      // 49
-			std::uint16_t              pad4A;           // 4A
-			std::uint32_t              pad4C;           // 4C
+			bool CheckAddEffect(ActiveEffectFactory::CheckTargetArgs& a_args, float a_resistance);
+
+			// members
+			TESObjectREFR*             caster;                // 00
+			MagicItem*                 magicItem;             // 08
+			Effect*                    effect;                // 10
+			TESBoundObject*            source;                // 18
+			IPostCreationModification* postCreationCallback;  // 20
+			ResultsCollector*          resultsCollector;      // 28
+			NiPoint3                   explosionPoint;        // 30
+			float                      magnitude;             // 3C
+			float                      power;                 // 40
+			MagicSystem::CastingSource castingSource;         // 44
+			bool                       areaTarget;            // 48
+			bool                       dualCasted;            // 49
+			std::uint16_t              pad4A;                 // 4A
+			std::uint32_t              pad4C;                 // 4C
 		};
 		static_assert(sizeof(AddTargetData) == 0x50);
 
 		virtual ~MagicTarget();  // 00
 
 		// add
-		virtual bool                         AddTarget(AddTargetData& a_targetData);                                               // 01
+		virtual bool AddTarget(AddTargetData& a_targetData);  // 01
+#ifndef ENABLE_SKYRIM_VR
 		virtual TESObjectREFR*               GetTargetStatsObject();                                                               // 02 - { return false; }
 		[[nodiscard]] virtual bool           MagicTargetIsActor() const;                                                           // 03 - { return false; }
 		virtual bool                         IsInvulnerable();                                                                     // 04 - { return false; }
@@ -89,7 +124,37 @@ namespace RE
 		virtual void                         EffectRemoved(ActiveEffect* a_effect);                                                // 09 - { return; }
 		virtual float                        CheckResistance(MagicItem* a_magicItem, Effect* a_effect, TESBoundObject* a_object);  // 0A - { return 1.0; }
 		virtual bool                         CheckAbsorb(Actor* a_actor, MagicItem* a_magicItem, const Effect* a_effect);          // 0B - { return false; }
+#else
+		TESObjectREFR*     GetTargetStatsObject();                                  // 02 - { return false; }
+		[[nodiscard]] bool MagicTargetIsActor() const;                              // 03 - { return false; }
+		bool               IsInvulnerable();                                        // 04 - { return false; }
+		void               InvalidateCommandedActorEffect(ActiveEffect* a_effect);  // 05 - { return; }
+		bool               CanAddActiveEffect();                                    // 06
 
+		/**
+		 * @brief Get the list of active effects on this magic target
+		 * @return Pointer to list of active effects
+		 * 
+		 * @warning In VR-enabled builds (SKYRIM_CROSS_VR or EXCLUSIVE_SKYRIM_VR),
+		 *          behavior differs depending on the runtime:
+		 * 
+		 * @note When running on Skyrim SE/AE: Calls through the game's vtable and
+		 *       returns the native persistent list. The list remains valid and can
+		 *       be safely stored or iterated multiple times.
+		 * 
+		 * @note When running on Skyrim VR: Returns a thread-local temporary snapshot.
+		 *       VR has no native GetActiveEffectList() - this is a compatibility shim.
+		 *       The returned pointer is ONLY valid until the next call to this function
+		 *       on the same thread. DO NOT store the pointer. DO NOT call recursively.
+		 *       Iterate immediately and discard.
+		 *       For robust VR code, use MagicTarget::VisitActiveEffects() instead.
+		 */
+		BSSimpleList<ActiveEffect*>* GetActiveEffectList();
+		void                         EffectAdded(ActiveEffect* a_effect);                                                  // 08 - { return; }
+		void                         EffectRemoved(ActiveEffect* a_effect);                                                // 09 - { return; }
+		float                        CheckResistance(MagicItem* a_magicItem, Effect* a_effect, TESBoundObject* a_object);  // 0A - { return 1.0; }
+		bool                         CheckAbsorb(Actor* a_actor, MagicItem* a_magicItem, const Effect* a_effect);          // 0B - { return false; }
+#endif
 		bool DispelEffect(MagicItem* a_spell, BSPointerHandle<Actor>& a_caster, ActiveEffect* a_effect = nullptr);
 #if defined(ENABLE_SKYRIM_VR)
 		void DispelEffectsWithArchetype(Archetype a_type, bool a_force);
@@ -97,7 +162,7 @@ namespace RE
 		Actor* GetTargetAsActor();
 		bool   HasEffectWithArchetype(Archetype a_type);
 		bool   HasMagicEffect(EffectSetting* a_effect);
-		bool   HasMagicEffectWithKeyword(BGSKeyword* a_keyword, std::uint64_t a_arg2);
+		bool   HasMagicEffectWithKeyword(BGSKeyword* a_keyword, MagicItem** a_spellOut);
 		void   VisitEffects(ForEachActiveEffectVisitor& visitor);
 
 #ifdef ENABLE_SKYRIM_VR
@@ -175,10 +240,9 @@ namespace RE
 
 		// members
 		SpellDispelData* postUpdateDispelList;  // 08
+		std::uint16_t    pad10;                 // 10
 		std::uint16_t    pad12;                 // 12
 		std::uint32_t    pad14;                 // 14
-	private:
-		KEEP_FOR_RE()
 	};
 	static_assert(sizeof(MagicTarget) == 0x18);
 }

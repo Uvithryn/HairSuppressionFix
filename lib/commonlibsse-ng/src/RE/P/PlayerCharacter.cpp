@@ -6,6 +6,11 @@ using namespace REL;
 
 namespace RE
 {
+	bool PlayerCharacter::PlayerSkills::CanLevelUp()
+	{
+		return this->data->levelThreshold <= this->data->xp;
+	}
+
 	void PlayerCharacter::PlayerSkills::AdvanceLevel(bool a_addThreshold)
 	{
 		using func_t = decltype(&PlayerCharacter::PlayerSkills::AdvanceLevel);
@@ -107,10 +112,17 @@ namespace RE
 		return func(this, a_form);
 	}
 
+	float PlayerCharacter::GetEquippedWeaponsDamage()
+	{
+		using func_t = decltype(&PlayerCharacter::GetEquippedWeaponsDamage);
+		static REL::Relocation<func_t> func{ RELOCATION_ID(0, 40252) };
+		return func(this);
+	}
+
 	NiPointer<TESObjectREFR> PlayerCharacter::GetGrabbedRef(VR_DEVICE a_device)
 	{
 		if SKYRIM_REL_CONSTEXPR (Module::IsVR()) {
-			return GetVRPlayerRuntimeData().grabbedObjectData[a_device].grabbedObject.get();
+			return GetVRPlayerRuntimeData()->grabbedObjectData[a_device].grabbedObject.get();
 		} else {
 			return REL::RelocateMemberIfNewer<ObjectRefHandle>(SKSE::RUNTIME_SSE_1_6_629, this, 0x8C8, 0x8D0).get();
 		}
@@ -187,7 +199,7 @@ namespace RE
 	bool PlayerCharacter::IsGrabbing() const
 	{
 		if SKYRIM_REL_CONSTEXPR (Module::IsVR()) {
-			for (auto& VRgrabData : GetVRPlayerRuntimeData().grabbedObjectData) {
+			for (auto& VRgrabData : GetVRPlayerRuntimeData()->grabbedObjectData) {
 				if (VRgrabData.grabbedObject) {
 					return true;
 				}
@@ -201,7 +213,8 @@ namespace RE
 #ifdef ENABLE_SKYRIM_VR
 	bool PlayerCharacter::IsGrabbingWithDevice(VR_DEVICE a_device) const
 	{
-		return static_cast<bool>(GetVRPlayerRuntimeData().grabbedObjectData[a_device].grabbedObject);
+		auto* vrData = GetVRPlayerRuntimeData();
+		return vrData && static_cast<bool>(vrData->grabbedObjectData[a_device].grabbedObject);
 	}
 #endif
 
@@ -210,13 +223,6 @@ namespace RE
 		using func_t = decltype(&PlayerCharacter::PlayMagicFailureSound);
 		static REL::Relocation<func_t> func{ RELOCATION_ID(39486, 40565) };
 		return func(this, a_spellType);
-	}
-
-	void PlayerCharacter::PlayPickupEvent(TESForm* a_item, TESForm* a_containerOwner, TESObjectREFR* a_containerRef, EventType a_eventType)
-	{
-		using func_t = decltype(&PlayerCharacter::PlayPickupEvent);
-		static REL::Relocation<func_t> func{ RELOCATION_ID(39384, 40456) };
-		return func(this, a_item, a_containerOwner, a_containerRef, a_eventType);
 	}
 
 	void PlayerCharacter::SetAIDriven(bool a_enable)
@@ -233,6 +239,13 @@ namespace RE
 		return func(this, a_flag, a_escaped);
 	}
 
+	void PlayerCharacter::SetGodMode(bool a_enable)
+	{
+		using func_t = decltype(&PlayerCharacter::SetGodMode);
+		static REL::Relocation<func_t> func{ RELOCATION_ID(39424, 40500) };
+		return func(this, a_enable);
+	}
+
 	void PlayerCharacter::StartGrabObject(VR_DEVICE a_device)
 	{
 		using func_t = decltype(&PlayerCharacter::StartGrabObject);
@@ -245,6 +258,22 @@ namespace RE
 		using func_t = decltype(&PlayerCharacter::UpdateCrosshairs);
 		static REL::Relocation<func_t> func(RELOCATION_ID(39535, 40621));
 		return func(this);
+	}
+
+	void PlayerCharacter::UpdateVRComfortCheck()
+	{
+		if (REL::Module::IsVR()) {
+			using func_t = decltype(&PlayerCharacter::UpdateVRComfortCheck);
+			static REL::Relocation<func_t> func{ REL::VariantID(0, 0, 0x6B9AA0) };
+			func(this);
+		}
+	}
+
+	void PlayerCharacter::UsePoisonFromInventory(AlchemyItem* a_poison)
+	{
+		using func_t = decltype(&PlayerCharacter::UsePoisonFromInventory);
+		static REL::Relocation<func_t> func{ RELOCATION_ID(39406, 40481) };
+		return func(this, a_poison);
 	}
 
 	bool PlayerCharacter::CenterOnCell_Impl(const char* a_cellName, RE::TESObjectCELL* a_cell)

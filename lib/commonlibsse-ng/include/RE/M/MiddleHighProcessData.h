@@ -5,9 +5,9 @@
 #include "RE/B/BSAtomic.h"
 #include "RE/B/BSPointerHandle.h"
 #include "RE/B/BSResponse.h"
+#include "RE/B/BSSimpleList.h"
 #include "RE/B/BSTArray.h"
 #include "RE/B/BSTEvent.h"
-#include "RE/B/BSTList.h"
 #include "RE/B/BSTSmartPointer.h"
 #include "RE/F/FormTypes.h"
 #include "RE/H/HitData.h"
@@ -91,8 +91,6 @@ namespace RE
 		std::uint8_t          pad41;        // 41
 		std::uint16_t         pad42;        // 42
 		std::uint32_t         pad44;        // 44
-	private:
-		KEEP_FOR_RE()
 	};
 	static_assert(sizeof(QueuedItem) == 0x48);
 
@@ -212,7 +210,7 @@ namespace RE
 		float                                      killMoveTimer;               // 2D8
 		float                                      unk2DC;                      // 2DC
 		std::uint32_t                              unk2E0;                      // 2E0
-		std::uint32_t                              unk2E4;                      // 2E4
+		std::uint32_t                              reservationSlot;             // 2E4
 		std::uint32_t                              currentFurnitureMarkerID;    // 2E8
 		std::uint32_t                              unk2EC;                      // 2EC
 		std::uint64_t                              unk2F0;                      // 2F0

@@ -21,8 +21,8 @@ namespace RE
 		~hkbCharacter() override;  // 00
 
 		// add
-		virtual void Unk_03(void);  // 03
-		virtual void Unk_04(void);  // 04
+		virtual void Unk_03(void);                                                                // 03
+		virtual void GetNearbyCharacters(float maxDistance, hkArray<hkbCharacter*>& characters);  // 04
 
 		// members
 		hkArray<hkbCharacter*>      nearbyCharacters;           // 10
@@ -47,8 +47,6 @@ namespace RE
 		bool                        deleteWorldFromModel;       // 9C
 		bool                        deletePoseLocal;            // 9D
 		std::uint16_t               pad9E;                      // 9E
-	private:
-		KEEP_FOR_RE()
 	};
 	static_assert(sizeof(hkbCharacter) == 0xA0);
 }

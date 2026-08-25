@@ -16,11 +16,21 @@ namespace RE
 
 	namespace BSGraphics
 	{
+		// Constant buffer register slots used by BSGraphics shaders.
+		// Lower slots (0-2) vary per shader type; higher slots are shared.
+		// Confirmed from game code: slot 0xC = per-frame, slot 0xD = VR stereo data.
 		enum class ConstantGroupLevel
 		{
-			PerTechnique,
-			PerMaterial,
-			PerGeometry,
+			PerTechnique = 0x0,  // Varies between PS/VS shaders
+			PerMaterial = 0x1,   // Varies between PS/VS shaders
+			PerGeometry = 0x2,   // Varies between PS/VS shaders
+
+			// Slot 7 is used for grass but purpose unknown
+			PerInstance = 0x8,  // Instanced geometry such as grass and trees
+			PerPreviousBones = 0x9,
+			PerBones = 0xA,
+			AlphaTestRef = 0xB,  // PS/VS. Single float for alpha testing (16 bytes allocated)
+			PerFrame = 0xC,      // PS/VS. Per-frame constants: view projections and other per-frame data
 		};
 
 		class ConstantGroup
@@ -38,8 +48,8 @@ namespace RE
 			// members
 			std::uint32_t                id;                  // 00
 			REX::W32::ID3D11PixelShader* shader;              // 08
-			ConstantGroup                constantBuffers[3];  // 10
-			std::array<std::int8_t, 64>  constantTable;       // 58
+			ConstantGroup                constantBuffers[3];  // 10 - [0]=PerTechnique, [1]=PerMaterial, [2]=PerGeometry
+			std::array<std::int8_t, 64>  constantTable;       // 40
 		};
 		static_assert(sizeof(PixelShader) == 0x80);
 
@@ -50,8 +60,8 @@ namespace RE
 			std::uint32_t                 id;                  // 00
 			REX::W32::ID3D11VertexShader* shader;              // 08
 			std::uint32_t                 byteCodeSize;        // 10
-			ConstantGroup                 constantBuffers[3];  // 18
-			std::uint64_t                 shaderDesc;          // 48
+			ConstantGroup                 constantBuffers[3];  // 18 - [0]=PerTechnique, [1]=PerMaterial, [2]=PerGeometry
+			std::uint64_t                 vertexDesc;          // 48 - vertex input layout descriptor mask
 			std::array<std::int8_t, 20>   constantTable;       // 50
 			std::uint32_t                 pad64;               // 64
 			std::uint8_t                  rawBytecode[0];      // 68
@@ -164,8 +174,6 @@ namespace RE
 		BSShaderTechniqueIDMap::MapType<BSGraphics::VertexShader*> vertexShaders;  // 28
 		BSShaderTechniqueIDMap::MapType<BSGraphics::PixelShader*>  pixelShaders;   // 58
 		const char*                                                fxpFilename;    // 88
-	private:
-		KEEP_FOR_RE()
 	};
 	static_assert(sizeof(BSShader) == 0x90);
 }

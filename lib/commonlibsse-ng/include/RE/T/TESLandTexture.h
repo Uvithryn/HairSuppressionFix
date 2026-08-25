@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RE/B/BSTList.h"
+#include "RE/B/BSSimpleList.h"
 #include "RE/F/FormTypes.h"
 #include "RE/T/TESForm.h"
 
@@ -46,8 +46,6 @@ namespace RE
 		std::uint16_t           pad3A;               // 3A
 		std::int32_t            shaderTextureIndex;  // 3C - INAM
 		BSSimpleList<TESGrass*> textureGrassList;    // 40 - GNAM
-	private:
-		KEEP_FOR_RE()
 	};
 	static_assert(sizeof(TESLandTexture) == 0x50);
 }

@@ -113,7 +113,7 @@ namespace RE
 		[[nodiscard]] float                  CalculateTotalGoldValue(Actor* a_caster = nullptr) const;
 		[[nodiscard]] MagicItemDataCollector CollectData() const;
 		[[nodiscard]] EffectSetting*         GetAVEffect() const;
-		[[nodiscard]] Effect*                GetCostliestEffectItem(MagicSystem::Delivery a_delivery = MagicSystem::Delivery::kTotal, bool a_positiveArea = false) const;
+		[[nodiscard]] Effect*                GetCostliestEffectItem(MagicSystem::Delivery a_delivery = MagicSystem::Delivery::kNone, bool a_positiveArea = false) const;
 		[[nodiscard]] Data*                  GetData();
 		[[nodiscard]] const Data*            GetData() const;
 		[[nodiscard]] bool                   IsValid() const;
@@ -136,9 +136,6 @@ namespace RE
 
 	protected:
 		float CalculateCost(Actor* a_caster) const;
-
-	private:
-		KEEP_FOR_RE()
 	};
 	static_assert(sizeof(MagicItem) == 0x90);
 }

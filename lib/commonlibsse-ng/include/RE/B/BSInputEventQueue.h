@@ -9,6 +9,14 @@
 #include "RE/T/ThumbstickEvent.h"
 #include "RE/V/VrWandTouchpadPositionEvent.h"
 #include "RE/V/VrWandTouchpadSwipeEvent.h"
+#include "REL/RuntimeDataAccessors.h"
+#include "SKSE/Version.h"
+
+#ifdef ENABLE_SKYRIM_AE
+#	include "RE/A/AmiiboEvent.h"
+#	include "RE/M/MotionGestureEvent.h"
+#	include "RE/S/SixaxisEvent.h"
+#endif
 
 namespace RE
 {
@@ -23,19 +31,57 @@ namespace RE
 		inline static constexpr std::uint8_t MAX_KINECT_EVENTS = 1;
 		inline static constexpr std::uint8_t MAX_VR_TOUCHPAD_POSITION_EVENTS = 3;
 		inline static constexpr std::uint8_t MAX_VR_TOUCHPAD_SWIPE_EVENTS = 3;
+#ifdef ENABLE_SKYRIM_AE
+		// New in AE 1.7.99.
+		inline static constexpr std::uint8_t MAX_SIXAXIS_EVENTS = 2;
+		inline static constexpr std::uint8_t MAX_MOTION_GESTURE_EVENTS = 2;
+		inline static constexpr std::uint8_t MAX_AMIIBO_EVENTS = 1;
+#endif
 
 		static BSInputEventQueue* GetSingleton();
 
-		void AddButtonEvent(INPUT_DEVICE a_device, std::int32_t a_id, float a_value, float a_duration);
-		void AddCharEvent(std::uint32_t a_keyCode);
-		void AddMouseMoveEvent(std::int32_t a_mouseInputX, std::int32_t a_mouseInputY);
-		void AddThumbstickEvent(ThumbstickEvent::InputType a_id, float a_xValue, float a_yValue);
-		void AddConnectEvent(INPUT_DEVICE a_device, bool a_connected);
-		void AddKinectEvent(const BSFixedString& a_userEvent, const BSFixedString& a_heard);
-		// vr only
-		void AddButtonEvent(INPUT_DEVICE a_device, std::int32_t a_arg2, std::int32_t a_id, float a_value, float a_duration);
+		template <class... Args>
+		void AddButtonEvent(Args&&... args)
+		{
+			AddEvent<ButtonEvent>(std::forward<Args>(args)...);
+		}
+
+		template <class... Args>
+		void AddCharEvent(Args&&... args)
+		{
+			AddEvent<CharEvent>(std::forward<Args>(args)...);
+		}
+
+		template <class... Args>
+		void AddMouseMoveEvent(Args&&... args)
+		{
+			AddEvent<MouseMoveEvent>(std::forward<Args>(args)...);
+		}
+
+		template <class... Args>
+		void AddThumbstickEvent(Args&&... args)
+		{
+			AddEvent<ThumbstickEvent>(std::forward<Args>(args)...);
+		}
+
+		template <class... Args>
+		void AddConnectEvent(Args&&... args)
+		{
+			AddEvent<DeviceConnectEvent>(std::forward<Args>(args)...);
+		}
+
+		template <class... Args>
+		void AddKinectEvent(Args&&... args)
+		{
+			AddEvent<KinectEvent>(std::forward<Args>(args)...);
+		}
+
+// VR-specific overloads (forward to the template implementations)
+#if defined(ENABLE_SKYRIM_VR)
+		void AddButtonEvent(INPUT_DEVICE a_device, std::int32_t a_arg2, std::int32_t a_id, float a_value, float a_duration, const BSFixedString& a_userEvent = {});
 		void AddThumbstickEvent(ThumbstickEvent::InputType a_id, INPUT_DEVICE a_device, float a_xValue, float a_yValue);
-		// end vr only
+#endif
+
 		void PushOntoInputQueue(InputEvent* a_event);
 		void ClearInputQueue();
 
@@ -57,6 +103,7 @@ namespace RE
 		};
 		static_assert(sizeof(VRTOUCHPADEVENT_DATA) == 0x198);
 
+		// On AE, use GetQueueHead()/GetQueueTail(), not this struct's queueHead/queueTail.
 		struct RUNTIME_DATA
 		{
 #if !defined(ENABLE_SKYRIM_VR)  // Non-VR
@@ -85,6 +132,16 @@ namespace RE
 			RUNTIME_DATA_CONTENT
 		};
 
+#ifdef ENABLE_SKYRIM_AE
+		struct AE1799_EVENT_DATA
+		{
+			SixaxisEvent       sixaxisEvents[MAX_SIXAXIS_EVENTS];               // 000
+			MotionGestureEvent motionGestureEvents[MAX_MOTION_GESTURE_EVENTS];  // 120
+			AmiiboEvent        amiiboEvents[MAX_AMIIBO_EVENTS];                 // 190
+		};
+		static_assert(sizeof(AE1799_EVENT_DATA) == 0x1D0);
+#endif
+
 		// members
 		std::uint8_t  pad001;                // 001
 		std::uint16_t pad002;                // 002
@@ -101,13 +158,59 @@ namespace RE
 
 		[[nodiscard]] inline RUNTIME_DATA& GetRuntimeData() noexcept
 		{
-			return REL::RelocateMember<RUNTIME_DATA>(this, 0x20, 0x20);
+#ifdef ENABLE_SKYRIM_AE
+			const std::ptrdiff_t seAndAe =
+				REL::Module::IsAtLeast(SKSE::RUNTIME_SSE_1_7_99) ?
+					0x28 :
+					0x20;
+#else
+			const std::ptrdiff_t seAndAe = 0x20;
+#endif
+			return REL::RelocateMember<RUNTIME_DATA>(this, seAndAe, 0x20);
 		}
 
 		[[nodiscard]] inline const RUNTIME_DATA& GetRuntimeData() const noexcept
 		{
-			return REL::RelocateMember<RUNTIME_DATA>(this, 0x20, 0x20);
+			return const_cast<BSInputEventQueue*>(this)->GetRuntimeData();
 		}
+
+#ifdef ENABLE_SKYRIM_AE
+		RUNTIME_DATA_ACCESSOR_VERSIONED_OPTIONAL_EX(AE1799_EVENT_DATA, GetAe1799EventData, SKSE::RUNTIME_SSE_1_7_99, 0x388);
+#endif
+
+#if defined(EXCLUSIVE_SKYRIM_VR)
+		[[nodiscard]] inline InputEvent*& GetQueueHead() noexcept
+		{
+			return GetRuntimeData().queueHead;
+		}
+		[[nodiscard]] inline InputEvent*& GetQueueTail() noexcept { return GetRuntimeData().queueTail; }
+#elif defined(ENABLE_SKYRIM_VR)  // SKYRIM_CROSS_VR: either runtime is possible
+		[[nodiscard]] inline InputEvent*& GetQueueHead() noexcept
+		{
+			if (REL::Module::IsVR()) {
+				return GetRuntimeData().queueHead;
+			}
+			return REL::RelocateMemberIfNewer<InputEvent*>(SKSE::RUNTIME_SSE_1_7_99, this, 0x380, 0x558);
+		}
+
+		[[nodiscard]] inline InputEvent*& GetQueueTail() noexcept
+		{
+			if (REL::Module::IsVR()) {
+				return GetRuntimeData().queueTail;
+			}
+			return REL::RelocateMemberIfNewer<InputEvent*>(SKSE::RUNTIME_SSE_1_7_99, this, 0x388, 0x560);
+		}
+#else                            // SE-only, AE-only, or flat -- no VR possible
+		[[nodiscard]] inline InputEvent*& GetQueueHead() noexcept
+		{
+			return REL::RelocateMemberIfNewer<InputEvent*>(SKSE::RUNTIME_SSE_1_7_99, this, 0x380, 0x558);
+		}
+
+		[[nodiscard]] inline InputEvent*& GetQueueTail() noexcept
+		{
+			return REL::RelocateMemberIfNewer<InputEvent*>(SKSE::RUNTIME_SSE_1_7_99, this, 0x388, 0x560);
+		}
+#endif
 
 		[[nodiscard]] VRTOUCHPAD_DATA* GetVRTouchpadData() noexcept
 		{
@@ -142,6 +245,23 @@ namespace RE
 				return nullptr;
 			} else {
 				return &REL::RelocateMember<VRTOUCHPADEVENT_DATA>(this, 0, 0x320);
+			}
+		}
+
+	private:
+		template <class T>
+		T* GetCachedEvent();
+
+		template <class T>
+		void AdvanceCount();
+
+		template <class T, class... Args>
+		void AddEvent(Args&&... args)
+		{
+			if (auto cachedEvent = GetCachedEvent<T>()) {
+				cachedEvent->Init(std::forward<Args>(args)...);
+				PushOntoInputQueue(cachedEvent);
+				AdvanceCount<T>();
 			}
 		}
 	};

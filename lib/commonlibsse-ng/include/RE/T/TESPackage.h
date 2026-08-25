@@ -238,8 +238,6 @@ namespace RE
 		Target        target;    // 08
 		std::int32_t  value;     // 10
 		std::uint32_t pad14;     // 14
-	private:
-		KEEP_FOR_RE()
 	};
 	static_assert(sizeof(PackageTarget) == 0x18);
 
@@ -279,8 +277,6 @@ namespace RE
 	public:
 		// members
 		PACK_SCHED_DATA psData;  // 0
-	private:
-		KEEP_FOR_RE()
 	};
 	static_assert(sizeof(PackageSchedule) == 0xC);
 
@@ -307,8 +303,6 @@ namespace RE
 		REX::EnumSet<PACK_EVENT_ACTION_TYPE, std::uint32_t> type;   // 08
 		std::uint32_t                                       pad0C;  // 0C
 		TopicData                                           topic;  // 10 - PDTO
-	private:
-		KEEP_FOR_RE()
 	};
 	static_assert(sizeof(PackageEventAction) == 0x20);
 
@@ -388,8 +382,6 @@ namespace RE
 		PackageEventAction                                  onChange;        // B8
 		REX::EnumSet<PACKAGE_PROCEDURE_TYPE, std::uint32_t> procedureType;   // D8
 		volatile std::uint32_t                              refCount;        // DC
-	private:
-		KEEP_FOR_RE()
 	};
 	static_assert(sizeof(TESPackage) == 0xE0);
 }

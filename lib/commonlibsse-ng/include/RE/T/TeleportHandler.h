@@ -13,8 +13,10 @@ namespace RE
 		~TeleportHandler() override;  // 00
 
 		// override (PlayerInputHandler)
-		bool CanProcess(InputEvent* a_event) override;                                  // 01
+		bool CanProcess(InputEvent* a_event) override;  // 01
+#	ifdef EXCLUSIVE_SKYRIM_VR
 		void ProcessButton(ButtonEvent* a_event, PlayerControlsData* a_data) override;  // 04
+#	endif
 
 		// members
 		std::uint64_t unk_30;  // 30
@@ -25,8 +27,6 @@ namespace RE
 		std::uint64_t unk_58;  // 58
 		std::uint64_t unk_60;  // 60
 		std::uint64_t unk_68;  // 68
-	private:
-		KEEP_FOR_RE()
 	};
 #	if !defined(ENABLE_SKYRIM_VR)
 	static_assert(sizeof(TeleportHandler) == 0x58);

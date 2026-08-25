@@ -2,11 +2,11 @@
 
 #include "RE/B/BGSDefaultObjectManager.h"
 #include "RE/B/BSPointerHandle.h"
+#include "RE/B/BSSimpleList.h"
 #include "RE/B/BSSoundHandle.h"
 #include "RE/B/BSTArray.h"
 #include "RE/B/BSTEvent.h"
 #include "RE/B/BSTHashMap.h"
-#include "RE/B/BSTList.h"
 #include "RE/B/BSTSmartPointer.h"
 #include "RE/B/BSTTuple.h"
 #include "RE/C/Character.h"
@@ -21,6 +21,7 @@
 #include "RE/T/TESObjectWEAP.h"
 #include "RE/T/TESQuest.h"
 #include "RE/T/TintMask.h"
+#include "REL/RuntimeDataAccessors.h"
 #include <RE/B/BSCoreTypes.h>
 #include <RE/N/NiPoint3.h>
 
@@ -50,10 +51,14 @@ namespace RE
 	class UserEventEnabledEvent;
 	struct BGSActorCellEvent;
 	struct BGSActorDeathEvent;
+#ifdef ENABLE_SKYRIM_AE
+	class BSSystemEvent;
+#endif
 	struct PerkRankData;
 	struct PositionPlayerEvent;
 	struct TESQuestStageItem;
 	struct TESTrackedStatsEvent;
+	struct TeleportPath;
 #ifdef EXCLUSIVE_SKYRIM_VR
 	struct VRDeviceConnectionChange;
 	struct VROverlayChange;
@@ -92,93 +97,93 @@ namespace RE
 
 	struct VR_NODE_DATA
 	{
-#define VR_NODE_DATA_CONTENT                                                                                                                                                  \
-	NiPointer<NiNode>          PlayerWorldNode;                 /* 3F0 */                                                                                                     \
-	NiPointer<NiNode>          FollowNode;                      /* 3F8 */                                                                                                     \
-	NiPointer<NiNode>          FollowOffset;                    /* 400 */                                                                                                     \
-	NiPointer<NiNode>          HeightOffsetNode;                /* 408 */                                                                                                     \
-	NiPointer<NiNode>          SnapWalkOffsetNode;              /* 410 */                                                                                                     \
-	NiPointer<NiNode>          RoomNode;                        /* 418 */                                                                                                     \
-	NiPointer<NiNode>          BlackSphere;                     /* 420 */                                                                                                     \
-	NiPointer<NiNode>          uiNode;                          /* 428 */                                                                                                     \
-	NiPointer<BSTriShape>      InWorldUIQuadGeo;                /* 430 */                                                                                                     \
-	NiPointer<NiNode>          UIPointerNode;                   /* 438 */                                                                                                     \
-	NiPointer<BSTriShape>      UIPointerGeo;                    /* 440 */                                                                                                     \
-	NiPointer<NiNode>          DialogueUINode;                  /* 448 */                                                                                                     \
-	NiPointer<NiNode>          TeleportDestinationPreview;      /* 450 */                                                                                                     \
-	NiPointer<NiNode>          TeleportDestinationFail;         /* 458 */                                                                                                     \
-	NiPointer<NiNode>          TeleportSprintPreview;           /* 460 */                                                                                                     \
-	NiPointer<NiNode>          SpellOrigin;                     /* 468 */                                                                                                     \
-	NiPointer<NiNode>          SpellDestination;                /* 470 */                                                                                                     \
-	NiPointer<NiNode>          ArrowOrigin;                     /* 478 */                                                                                                     \
-	NiPointer<NiNode>          ArrowDestination;                /* 480 */                                                                                                     \
-	NiPointer<NiNode>          QuestMarker;                     /* 488 */                                                                                                     \
-	NiPointer<NiNode>          LeftWandNode;                    /* 490 */                                                                                                     \
-	NiPointer<NiNode>          LeftWandShakeNode;               /* 498 */                                                                                                     \
-	NiPointer<NiNode>          LeftValveIndexControllerNode;    /* 4A0 */                                                                                                     \
-	NiPointer<NiNode>          unkNode4A8;                      /* 4A8 */                                                                                                     \
-	NiPointer<NiNode>          LeftWeaponOffsetNode;            /* 4B0 */                                                                                                     \
-	NiPointer<NiNode>          LeftCrossbowOffsetNode;          /* 4B8 */                                                                                                     \
-	NiPointer<NiNode>          LeftMeleeWeaponOffsetNode;       /* 4C0 */                                                                                                     \
-	NiPointer<NiNode>          LeftStaffWeaponOffsetNode;       /* 4C8 */                                                                                                     \
-	NiPointer<NiNode>          LeftShieldOffsetNode;            /* 4D0 */                                                                                                     \
-	NiPointer<NiNode>          RightShieldOffsetNode;           /* 4D8 */                                                                                                     \
-	NiPointer<NiNode>          SecondaryMagicOffsetNode;        /* 4E0 */                                                                                                     \
-	NiPointer<NiNode>          SecondaryMagicAimNode;           /* 4E8 */                                                                                                     \
-	NiPointer<NiNode>          SecondaryStaffMagicOffsetNode;   /* 4F0 */                                                                                                     \
-	NiPointer<NiNode>          RightWandNode;                   /* 4F8 */                                                                                                     \
-	NiPointer<NiNode>          RightWandShakeNode;              /* 500 */                                                                                                     \
-	NiPointer<NiNode>          RightValveIndexControllerNode;   /* 508 */                                                                                                     \
-	NiPointer<NiNode>          unkNode510;                      /* 510 */                                                                                                     \
-	NiPointer<NiNode>          RightWeaponOffsetNode;           /* 518 */                                                                                                     \
-	NiPointer<NiNode>          RightCrossbowOffsetNode;         /* 520 */                                                                                                     \
-	NiPointer<NiNode>          RightMeleeWeaponOffsetNode;      /* 528 */                                                                                                     \
-	NiPointer<NiNode>          RightStaffWeaponOffsetNode;      /* 530 */                                                                                                     \
-	NiPointer<NiNode>          PrimaryMagicOffsetNode;          /* 538 */                                                                                                     \
-	NiPointer<NiNode>          PrimaryMagicAimNode;             /* 540 */                                                                                                     \
-	NiPointer<NiNode>          PrimaryStaffMagicOffsetNode;     /* 548 */                                                                                                     \
-	std::uint64_t              unk550;                          /* 550 */                                                                                                     \
-	NiPointer<NiBillboardNode> CrosshairParent;                 /* 558 */                                                                                                     \
-	NiPointer<NiBillboardNode> CrosshairSecondaryParent;        /* 560 */                                                                                                     \
-	NiPointer<NiBillboardNode> TargetLockParent;                /* 568 */                                                                                                     \
-	NiPointer<NiNode>          GamepadNode;                     /* 570 */                                                                                                     \
-	NiPointer<NiNode>          LastSyncPos;                     /* 578 */                                                                                                     \
-	NiPointer<NiNode>          UprightHmdNode;                  /* 580 */                                                                                                     \
-	NiPointer<NiNode>          MapMarkers3D;                    /* 588 */                                                                                                     \
-	NiPointer<NiNode>          NPCLHnd;                         /* 590 */                                                                                                     \
-	NiPointer<NiNode>          NPCRHnd;                         /* 598 */                                                                                                     \
-	NiPointer<NiNode>          NPCLClv;                         /* 5A0 */                                                                                                     \
-	NiPointer<NiNode>          NPCRClv;                         /* 5A8 */                                                                                                     \
-	std::uint32_t              unk5B0;                          /* 5B0 */                                                                                                     \
-	std::uint32_t              unk5B4;                          /* 5B4 */                                                                                                     \
-	std::uint64_t              unk5B8;                          /* 5B8 */                                                                                                     \
-	VR_Bow_State               bowState;                        /* 5C0 */                                                                                                     \
-	std::uint32_t              unk5C4;                          /* 5C4 */                                                                                                     \
-	NiPointer<NiNode>          BowAimNode;                      /* 5C8 */                                                                                                     \
-	NiPointer<NiNode>          BowRotationNode;                 /* 5D0 */                                                                                                     \
-	NiPointer<NiNode>          ArrowSnapNode;                   /* 5D8 */                                                                                                     \
-	NiPointer<BSFadeNode>      ArrowNode;                       /* 5E0 */                                                                                                     \
-	NiPointer<BSFadeNode>      ArrowFireNode;                   /* 5E8 */                                                                                                     \
-	std::uint64_t              unk5F0;                          /* 5F0 */                                                                                                     \
-	NiPointer<NiNode>          ArrowHoldOffsetNode;             /* 5F8 */                                                                                                     \
-	NiPointer<NiNode>          ArrowHoldNode;                   /* 600 */                                                                                                     \
-	std::uint64_t              unk608;                          /* 608 */                                                                                                     \
-	float                      currentArrowSnapDistance;        /* 610 */                                                                                                     \
-	std::uint32_t              unk614;                          /* 614 */                                                                                                     \
-	float                      currentBowDrawAmount;            /* 618 - 0 to 1 */                                                                                            \
-	float                      lastRumbleBowDrawAmount;         /* 61C - 0 to 1 */                                                                                            \
-	std::uint64_t              unk620;                          /* 620 */                                                                                                     \
-	std::uint64_t              unk628;                          /* 628 */                                                                                                     \
-	std::uint64_t              unk630;                          /* 630 */                                                                                                     \
-	void*                      QuestMarkerBillBoardsNodeArray;  /* 638    TODO - Make into proper data structure */                                                           \
-	void*                      TeleportNodeArray;               /* 640    TODO - Make into proper data structure */                                                           \
-	void*                      QuestMarkerBillBoardsNodeArray2; /* 648    TODO - Make into proper data structure -> points to same place as QuestMarkerBillBoardsNodeArray */ \
-	std::uint64_t              unk650;                          /* 650 */                                                                                                     \
-	void*                      TeleportNodeArray2;              /* 658    TODO - Make into proper data structure -> points to same place as TeleportNodeArray */              \
-	void*                      QuestMarkerBillBoardsNodeArray3; /* 660    TODO - Make into proper data structure -> points to same place as QuestMarkerBillBoardsNodeArray */ \
-	std::uint64_t              unk668;                          /* 668 */                                                                                                     \
-	float                      unkFloat670;                     /* 670 */                                                                                                     \
-	std::uint32_t              unk674;                          /* 674 */                                                                                                     \
+#define VR_NODE_DATA_CONTENT                                                                                                                                                                                                               \
+	NiPointer<NiNode>          PlayerWorldNode;                 /* 3F0 */                                                                                                                                                                  \
+	NiPointer<NiNode>          FollowNode;                      /* 3F8 */                                                                                                                                                                  \
+	NiPointer<NiNode>          FollowOffset;                    /* 400 */                                                                                                                                                                  \
+	NiPointer<NiNode>          HeightOffsetNode;                /* 408 */                                                                                                                                                                  \
+	NiPointer<NiNode>          SnapWalkOffsetNode;              /* 410 */                                                                                                                                                                  \
+	NiPointer<NiNode>          RoomNode;                        /* 418 */                                                                                                                                                                  \
+	NiPointer<NiNode>          BlackSphere;                     /* 420 */                                                                                                                                                                  \
+	NiPointer<NiNode>          uiNode;                          /* 428 */                                                                                                                                                                  \
+	NiPointer<BSTriShape>      InWorldUIQuadGeo;                /* 430 */                                                                                                                                                                  \
+	NiPointer<NiNode>          UIPointerNode;                   /* 438 */                                                                                                                                                                  \
+	NiPointer<BSTriShape>      UIPointerGeo;                    /* 440 */                                                                                                                                                                  \
+	NiPointer<NiNode>          DialogueUINode;                  /* 448 */                                                                                                                                                                  \
+	NiPointer<NiNode>          TeleportDestinationPreview;      /* 450 */                                                                                                                                                                  \
+	NiPointer<NiNode>          TeleportDestinationFail;         /* 458 */                                                                                                                                                                  \
+	NiPointer<NiNode>          TeleportSprintPreview;           /* 460 */                                                                                                                                                                  \
+	NiPointer<NiNode>          SpellOrigin;                     /* 468 */                                                                                                                                                                  \
+	NiPointer<NiNode>          SpellDestination;                /* 470 */                                                                                                                                                                  \
+	NiPointer<NiNode>          ArrowOrigin;                     /* 478 */                                                                                                                                                                  \
+	NiPointer<NiNode>          ArrowDestination;                /* 480 */                                                                                                                                                                  \
+	NiPointer<NiNode>          QuestMarker;                     /* 488 */                                                                                                                                                                  \
+	NiPointer<NiNode>          LeftWandNode;                    /* 490 */                                                                                                                                                                  \
+	NiPointer<NiNode>          LeftWandShakeNode;               /* 498 */                                                                                                                                                                  \
+	NiPointer<NiNode>          LeftValveIndexControllerNode;    /* 4A0 */                                                                                                                                                                  \
+	NiPointer<NiNode>          unkNode4A8;                      /* 4A8 */                                                                                                                                                                  \
+	NiPointer<NiNode>          LeftWeaponOffsetNode;            /* 4B0 */                                                                                                                                                                  \
+	NiPointer<NiNode>          LeftCrossbowOffsetNode;          /* 4B8 */                                                                                                                                                                  \
+	NiPointer<NiNode>          LeftMeleeWeaponOffsetNode;       /* 4C0 */                                                                                                                                                                  \
+	NiPointer<NiNode>          LeftStaffWeaponOffsetNode;       /* 4C8 */                                                                                                                                                                  \
+	NiPointer<NiNode>          LeftShieldOffsetNode;            /* 4D0 */                                                                                                                                                                  \
+	NiPointer<NiNode>          RightShieldOffsetNode;           /* 4D8 */                                                                                                                                                                  \
+	NiPointer<NiNode>          SecondaryMagicOffsetNode;        /* 4E0 */                                                                                                                                                                  \
+	NiPointer<NiNode>          SecondaryMagicAimNode;           /* 4E8 */                                                                                                                                                                  \
+	NiPointer<NiNode>          SecondaryStaffMagicOffsetNode;   /* 4F0 */                                                                                                                                                                  \
+	NiPointer<NiNode>          RightWandNode;                   /* 4F8 */                                                                                                                                                                  \
+	NiPointer<NiNode>          RightWandShakeNode;              /* 500 */                                                                                                                                                                  \
+	NiPointer<NiNode>          RightValveIndexControllerNode;   /* 508 */                                                                                                                                                                  \
+	NiPointer<NiNode>          unkNode510;                      /* 510 */                                                                                                                                                                  \
+	NiPointer<NiNode>          RightWeaponOffsetNode;           /* 518 */                                                                                                                                                                  \
+	NiPointer<NiNode>          RightCrossbowOffsetNode;         /* 520 */                                                                                                                                                                  \
+	NiPointer<NiNode>          RightMeleeWeaponOffsetNode;      /* 528 */                                                                                                                                                                  \
+	NiPointer<NiNode>          RightStaffWeaponOffsetNode;      /* 530 */                                                                                                                                                                  \
+	NiPointer<NiNode>          PrimaryMagicOffsetNode;          /* 538 */                                                                                                                                                                  \
+	NiPointer<NiNode>          PrimaryMagicAimNode;             /* 540 */                                                                                                                                                                  \
+	NiPointer<NiNode>          PrimaryStaffMagicOffsetNode;     /* 548 */                                                                                                                                                                  \
+	std::uint64_t              unk550;                          /* 550 - two uint32 (both init = 3 in VR_NODE_DATA ctor); likely mode/index pair */                                                                                        \
+	NiPointer<NiBillboardNode> CrosshairParent;                 /* 558 */                                                                                                                                                                  \
+	NiPointer<NiBillboardNode> CrosshairSecondaryParent;        /* 560 */                                                                                                                                                                  \
+	NiPointer<NiBillboardNode> TargetLockParent;                /* 568 */                                                                                                                                                                  \
+	NiPointer<NiNode>          HmdNode;                         /* 570 - live-tracked HMD pose node; PlayerCharacter ctor writes eyeHeight to +0x74, and ApplyRoomscaleMovement reads its world position to drive TryMoveTo/SetPosition */ \
+	NiPointer<NiNode>          LastSyncPos;                     /* 578 */                                                                                                                                                                  \
+	NiPointer<NiNode>          UprightHmdNode;                  /* 580 */                                                                                                                                                                  \
+	NiPointer<NiNode>          MapMarkers3D;                    /* 588 */                                                                                                                                                                  \
+	NiPointer<NiNode>          NPCLHnd;                         /* 590 */                                                                                                                                                                  \
+	NiPointer<NiNode>          NPCRHnd;                         /* 598 */                                                                                                                                                                  \
+	NiPointer<NiNode>          NPCLClv;                         /* 5A0 */                                                                                                                                                                  \
+	NiPointer<NiNode>          NPCRClv;                         /* 5A8 */                                                                                                                                                                  \
+	std::uint32_t              unk5B0;                          /* 5B0 */                                                                                                                                                                  \
+	std::uint32_t              unk5B4;                          /* 5B4 */                                                                                                                                                                  \
+	std::uint64_t              unk5B8;                          /* 5B8 */                                                                                                                                                                  \
+	VR_Bow_State               bowState;                        /* 5C0 */                                                                                                                                                                  \
+	std::uint32_t              unk5C4;                          /* 5C4 */                                                                                                                                                                  \
+	NiPointer<NiNode>          BowAimNode;                      /* 5C8 */                                                                                                                                                                  \
+	NiPointer<NiNode>          BowRotationNode;                 /* 5D0 */                                                                                                                                                                  \
+	NiPointer<NiNode>          ArrowSnapNode;                   /* 5D8 */                                                                                                                                                                  \
+	NiPointer<BSFadeNode>      ArrowNode;                       /* 5E0 */                                                                                                                                                                  \
+	NiPointer<BSFadeNode>      ArrowFireNode;                   /* 5E8 */                                                                                                                                                                  \
+	std::uint64_t              unk5F0;                          /* 5F0 */                                                                                                                                                                  \
+	NiPointer<NiNode>          ArrowHoldOffsetNode;             /* 5F8 */                                                                                                                                                                  \
+	NiPointer<NiNode>          ArrowHoldNode;                   /* 600 */                                                                                                                                                                  \
+	std::uint64_t              unk608;                          /* 608 */                                                                                                                                                                  \
+	float                      currentArrowSnapDistance;        /* 610 */                                                                                                                                                                  \
+	std::uint32_t              unk614;                          /* 614 */                                                                                                                                                                  \
+	float                      currentBowDrawAmount;            /* 618 - 0 to 1 */                                                                                                                                                         \
+	float                      lastRumbleBowDrawAmount;         /* 61C - 0 to 1 */                                                                                                                                                         \
+	std::uint64_t              unk620;                          /* 620 */                                                                                                                                                                  \
+	std::uint64_t              unk628;                          /* 628 */                                                                                                                                                                  \
+	std::uint64_t              unk630;                          /* 630 */                                                                                                                                                                  \
+	void*                      QuestMarkerBillBoardsNodeArray;  /* 638    TODO - Make into proper data structure */                                                                                                                        \
+	void*                      TeleportNodeArray;               /* 640    TODO - Make into proper data structure */                                                                                                                        \
+	void*                      QuestMarkerBillBoardsNodeArray2; /* 648    TODO - Make into proper data structure -> points to same place as QuestMarkerBillBoardsNodeArray */                                                              \
+	std::uint64_t              unk650;                          /* 650 */                                                                                                                                                                  \
+	void*                      TeleportNodeArray2;              /* 658    TODO - Make into proper data structure -> points to same place as TeleportNodeArray */                                                                           \
+	void*                      QuestMarkerBillBoardsNodeArray3; /* 660    TODO - Make into proper data structure -> points to same place as QuestMarkerBillBoardsNodeArray */                                                              \
+	std::uint64_t              unk668;                          /* 668 */                                                                                                                                                                  \
+	float                      unkFloat670;                     /* 670 */                                                                                                                                                                  \
+	std::uint32_t              unk674;                          /* 674 */                                                                                                                                                                  \
 	void*                      TeleportNodeArray3;              /* 678    TODO - Make into proper data structure */
         VR_NODE_DATA_CONTENT
 	};
@@ -290,13 +295,6 @@ namespace RE
 		inline static constexpr auto VTABLE = VTABLE_PlayerCharacter;
 		inline static constexpr auto FORMTYPE = FormType::ActorCharacter;
 
-		enum class EventType
-		{
-			kThief = 3,
-			kContainer = 5,
-			kDeadBody = 6
-		};
-
 		enum class GrabbingType
 		{
 			kNone = 0,
@@ -308,7 +306,8 @@ namespace RE
 		{
 			kNone = 0,
 			kDisableSaving = 1 << 0,
-			kHandsBound = 1 << 2
+			kDisableWaiting = 1 << 1,
+			kShowControlsDisabledMessage = 1 << 2
 		};
 
 		struct GrabData
@@ -342,6 +341,54 @@ namespace RE
 			std::uint32_t                                    unk64Flags;        // 64
 		};
 		static_assert(sizeof(VRGrabData) == 0x68);
+
+		/**
+		 * Per-controller state stored inline in PlayerCharacter (VR-only).
+		 *
+		 * Binary-verified via:
+		 *   - VR PlayerCharacter::ctor at 0x1406a26a0 →
+		 *     `_eh_vector_constructor_iterator(unk6F0 + 0x20, 0xD0, 2, ctor, dtor)`
+		 *     confirms a 2-element array (one per controller).
+		 *   - Element ctor `FUN_1406e2540` initializes 4 BSTArrays (cap=10) +
+		 *     NiPoint3 + state flag.
+		 *   - Element dtor `FUN_1406e3f70` shows classic `NiRefObject` refcount
+		 *     LOCK/decrement/release at offsets 0x10/0x18/0x20 → those are
+		 *     `NiPointer<>` smart pointers (likely scene-graph nodes for the
+		 *     controller's model/attachments).
+		 *
+		 * The 4 BSTArrays form a ring-buffer pattern (10 samples each, with 1
+		 * uint32 stream + 3 NiPoint3 streams) — consistent with VR controller
+		 * input smoothing (timestamp + position + velocity + angular).
+		 *
+		 * Most sub-field semantics remain `unk*` pending deeper RE.
+		 */
+		struct VRPlayerHandData
+		{
+			// members
+			std::uint64_t           unk00;     // 00
+			std::uint32_t           unk08;     // 08
+			std::uint32_t           pad0C;     // 0C
+			NiPointer<NiAVObject>   unk10;     // 10 - NiPointer (likely controller scene node)
+			NiPointer<NiAVObject>   unk18;     // 18 - NiPointer
+			NiPointer<NiAVObject>   unk20;     // 20 - NiPointer
+			std::uint64_t           unk28;     // 28 - init = 3 (state/mode flag)
+			NiPoint3                unkPos30;  // 30 - init = (0,0,0)
+			std::uint32_t           pad3C;     // 3C
+			BSTArray<std::uint32_t> historyA;  // 40 - cap=10, uint32 history (frame index / timestamps?)
+			BSTArray<NiPoint3>      historyB;  // 58 - cap=10, NiPoint3 history (position?)
+			BSTArray<NiPoint3>      historyC;  // 70 - cap=10, NiPoint3 history (velocity?)
+			BSTArray<NiPoint3>      historyD;  // 88 - cap=10, NiPoint3 history (angular?)
+			std::uint64_t           unkA0;     // A0
+			std::uint64_t           unkA8;     // A8
+			std::uint64_t           unkB0;     // B0
+			std::uint32_t           unkB8;     // B8
+			std::uint16_t           unkBC;     // BC
+			std::uint16_t           padBE;     // BE
+			std::uint64_t           unkC0;     // C0
+			std::uint32_t           unkC8;     // C8
+			std::uint32_t           padCC;     // CC
+		};
+		static_assert(sizeof(VRPlayerHandData) == 0xD0);
 
 		struct PlayerFlags
 		{
@@ -406,7 +453,7 @@ namespace RE
 			bool unk6_5: 1;                                                                // 6:5
 			bool unk6_6: 1;                                                                // 6:6
 			bool unk6_7: 1;                                                                // 6:7
-			bool unk7_0: 1;                                                                // 7:0
+			bool vrComfortFadeActive: 1;                                                   // 7:0 - Set/cleared by PlayerCharacter::UpdateVRComfortCheck's per-frame comfort-radius Havok collision test (normally around the player's head; retargeted at DialogueMenu::occlusionCheckNode's position while a dialogue is open). Drives the VR comfort screen-fade-to-black. VR only.
 			bool unk7_1: 1;                                                                // 7:1
 			bool unk7_2: 1;                                                                // 7:2
 			bool unk7_3: 1;                                                                // 7:3
@@ -426,39 +473,6 @@ namespace RE
 			TESObjectWEAP* leftHandWeapon;   // 08
 		};
 		static_assert(sizeof(QueuedWeapon) == 0x10);
-
-		struct TeleportPath  // TODO: Should not be in Player class. Gets used in Pathing and other non-player areas
-		{
-		public:
-			struct Unk00Data
-			{
-			public:
-				// members
-				bool           unk00;         // 00 - Determines whether to use worldspace or cell?
-				char           pad01[7];      // 01
-				TESWorldSpace* worldspace;    // 08
-				TESObjectCELL* interiorCell;  // 10
-			};
-			static_assert(sizeof(Unk00Data) == 0x18);
-
-			struct Unk18Data
-			{
-			public:
-				// members
-				RE::TESObjectREFR* unk00;  // 00
-				std::uint64_t      unk08;  // 08
-				std::uint64_t      unk10;  // 10
-			};
-			static_assert(sizeof(Unk18Data) == 0x18);
-
-			// members
-			BSTArray<Unk00Data> unk00;  // 00
-			BSTArray<Unk18Data> unk18;  // 18
-			std::uint64_t       unk30;  // 30
-			std::uint64_t       unk38;  // 38
-			std::uint64_t       unk40;  // 40
-		};
-		static_assert(sizeof(TeleportPath) == 0x48);
 
 		struct PreTransformationData
 		{
@@ -498,7 +512,7 @@ namespace RE
 	std::int32_t                              difficulty;      /* 0 */ \
 	ActorHandle                               assumedIdentity; /* 4 */ \
 	std::int8_t                               murder;          /* 8 */ \
-	std::int8_t                               perkCount;       /* 9 */ \
+	std::uint8_t                              perkCount;       /* 9 */ \
 	REX::EnumSet<ByCharGenFlag, std::uint8_t> byCharGenFlag;   /* A */ \
 	std::uint8_t                              padB;            /* B */
 
@@ -557,6 +571,7 @@ namespace RE
 			};
 			static_assert(sizeof(Data) == 0x128);
 
+			bool CanLevelUp();
 			void AdvanceLevel(bool a_addThreshold);
 
 			// members
@@ -605,7 +620,7 @@ namespace RE
 	PlayerSkills*              skills;                                      /* 0E0 */                                 \
 	ActorHandle                autoAimActor;                                /* 0E8 */                                 \
 	RefHandle                  unk0EC;                                      /* 0EC */                                 \
-	std::uint64_t              unk118;                                      /* 0F0 */                                 \
+	std::uint32_t              unk118[2];                                   /* 0F0 */                                 \
 	NiPointer<NiAVObject>      targeted3D;                                  /* 0F8 */                                 \
 	CombatGroup*               combatGroup;                                 /* 100 */                                 \
 	BSTArray<ActorHandle>      actorsToDisplayOnTheHUDArray;                /* 108 */                                 \
@@ -714,6 +729,7 @@ namespace RE
 		[[nodiscard]] NiPointer<Actor>         GetActorDoingPlayerCommand() const;
 		[[nodiscard]] float                    GetArmorValue(InventoryEntryData* a_form);
 		[[nodiscard]] float                    GetDamage(InventoryEntryData* a_form);
+		float                                  GetEquippedWeaponsDamage();
 		[[nodiscard]] NiPointer<TESObjectREFR> GetGrabbedRef(VR_DEVICE a_device = VR_DEVICE::kLeftController);
 		[[nodiscard]] std::int32_t             GetItemCount(TESBoundObject* a_object);
 		[[nodiscard]] std::uint32_t            GetNumTints(std::uint32_t a_tintType);
@@ -724,81 +740,68 @@ namespace RE
 		[[nodiscard]] bool                     IsGrabbing() const;
 		bool                                   IsGrabbingWithDevice(VR_DEVICE a_device) const;
 		void                                   PlayMagicFailureSound(MagicSystem::SpellType a_spellType);
-		void                                   PlayPickupEvent(TESForm* a_item, TESForm* a_containerOwner, TESObjectREFR* a_containerRef, EventType a_eventType);
 		void                                   SetAIDriven(bool a_enable);
 		void                                   SetEscaping(bool a_flag, bool a_escaped);
+		void                                   SetGodMode(bool a_enable);
 		void                                   StartGrabObject(VR_DEVICE a_device = VR_DEVICE::kLeftController);
 		void                                   UpdateCrosshairs();
+		// Per-frame VR comfort-radius Havok collision check; sets/clears playerFlags.vrComfortFadeActive.
+		// Normally casts around the player's head (radius fPlayerComfortRadiusMeters:VRTeleport);
+		// retargets at DialogueMenu::occlusionCheckNode's world position (radius
+		// fPlayerDialogueMenuOcclusionCheckSize:VRUI) while the dialogue menu is open and no other
+		// blocking menu (container/barter/training/gift) is open. No-op outside VR.
+		void UpdateVRComfortCheck();
+		void UsePoisonFromInventory(AlchemyItem* a_poison);
 
+		// AE 1.7.99's new BSTEventSink<BSSystemEvent> base (see AsBSSystemEventSink below)
+		// shifts these three bases by +8.
 		[[nodiscard]] inline BSTEventSource<BGSActorCellEvent>* AsBGSActorCellEventSource() noexcept
 		{
-			return &REL::RelocateMemberIfNewer<BSTEventSource<BGSActorCellEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2D0, 0x2D8);
+			if SKYRIM_REL_CONSTEXPR (REL::Module::IsAE()) {
+				return &REL::RelocateMemberIfNewer<BSTEventSource<BGSActorCellEvent>>(SKSE::RUNTIME_SSE_1_7_99, this, 0x2D8, 0x2E0);
+			}
+			return &REL::RelocateMember<BSTEventSource<BGSActorCellEvent>>(this, 0x2D0, 0x2E8);
 		}
-
 		[[nodiscard]] inline const BSTEventSource<BGSActorCellEvent>* AsBGSActorCellEventSource() const noexcept
 		{
-			return &REL::RelocateMemberIfNewer<BSTEventSource<BGSActorCellEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2D0, 0x2D8);
+			return const_cast<PlayerCharacter*>(this)->AsBGSActorCellEventSource();
 		}
 
 		[[nodiscard]] inline BSTEventSource<BGSActorDeathEvent>* AsBGSActorDeathEventSource() noexcept
 		{
-			return &REL::RelocateMemberIfNewer<BSTEventSource<BGSActorDeathEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x328, 0x330);
+			if SKYRIM_REL_CONSTEXPR (REL::Module::IsAE()) {
+				return &REL::RelocateMemberIfNewer<BSTEventSource<BGSActorDeathEvent>>(SKSE::RUNTIME_SSE_1_7_99, this, 0x330, 0x338);
+			}
+			return &REL::RelocateMember<BSTEventSource<BGSActorDeathEvent>>(this, 0x328, 0x340);
 		}
-
 		[[nodiscard]] inline const BSTEventSource<BGSActorDeathEvent>* AsBGSActorDeathEventSource() const noexcept
 		{
-			return &REL::RelocateMemberIfNewer<BSTEventSource<BGSActorDeathEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2D0, 0x330);
+			return const_cast<PlayerCharacter*>(this)->AsBGSActorDeathEventSource();
 		}
 
 		[[nodiscard]] inline BSTEventSource<PositionPlayerEvent>* AsPositionPlayerEventSource() noexcept
 		{
-			return &REL::RelocateMemberIfNewer<BSTEventSource<PositionPlayerEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x380, 0x388);
+			if SKYRIM_REL_CONSTEXPR (REL::Module::IsAE()) {
+				return &REL::RelocateMemberIfNewer<BSTEventSource<PositionPlayerEvent>>(SKSE::RUNTIME_SSE_1_7_99, this, 0x388, 0x390);
+			}
+			return &REL::RelocateMember<BSTEventSource<PositionPlayerEvent>>(this, 0x380, 0x398);
 		}
-
 		[[nodiscard]] inline const BSTEventSource<PositionPlayerEvent>* AsPositionPlayerEventSource() const noexcept
 		{
-			return &REL::RelocateMemberIfNewer<BSTEventSource<PositionPlayerEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x380, 0x388);
+			return const_cast<PlayerCharacter*>(this)->AsPositionPlayerEventSource();
 		}
 
-		[[nodiscard]] inline BSTEventSink<MenuOpenCloseEvent>* AsMenuOpenCloseEventSink() noexcept
-		{
-			return &REL::RelocateMemberIfNewer<BSTEventSink<MenuOpenCloseEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2B0, 0x2B8);
-		}
+		RUNTIME_CAST_ACCESSOR_VERSIONED(BSTEventSink<MenuOpenCloseEvent>, AsMenuOpenCloseEventSink, SKSE::RUNTIME_SSE_1_6_629, 0x2B0, 0x2B8)
 
-		[[nodiscard]] inline const BSTEventSink<MenuOpenCloseEvent>* AsMenuOpenCloseEventSink() const noexcept
-		{
-			return &REL::RelocateMemberIfNewer<BSTEventSink<MenuOpenCloseEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2B0, 0x2B8);
-		}
+		RUNTIME_CAST_ACCESSOR_VERSIONED(BSTEventSink<MenuModeChangeEvent>, AsMenuModeChangeEventSink, SKSE::RUNTIME_SSE_1_6_629, 0x2B8, 0x2C0)
 
-		[[nodiscard]] inline BSTEventSink<MenuModeChangeEvent>* AsMenuModeChangeEventSink() noexcept
-		{
-			return &REL::RelocateMemberIfNewer<BSTEventSink<MenuModeChangeEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2B8, 0x2C0);
-		}
+		RUNTIME_CAST_ACCESSOR_VERSIONED(BSTEventSink<UserEventEnabledEvent>, AsUserEventEnabledEventSink, SKSE::RUNTIME_SSE_1_6_629, 0x2C0, 0x2C8)
 
-		[[nodiscard]] inline const BSTEventSink<MenuModeChangeEvent>* AsMenuModeChangeEventSink() const noexcept
-		{
-			return &REL::RelocateMemberIfNewer<BSTEventSink<MenuModeChangeEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2B8, 0x2C0);
-		}
+		RUNTIME_CAST_ACCESSOR_VERSIONED(BSTEventSink<TESTrackedStatsEvent>, AsTESTrackedStatsEventSink, SKSE::RUNTIME_SSE_1_6_629, 0x2C8, 0x2D0)
 
-		[[nodiscard]] inline BSTEventSink<UserEventEnabledEvent>* AsUserEventEnabledEventSink() noexcept
-		{
-			return &REL::RelocateMemberIfNewer<BSTEventSink<UserEventEnabledEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2C0, 0x2C8);
-		}
-
-		[[nodiscard]] inline const BSTEventSink<UserEventEnabledEvent>* AsUserEventEnabledEventSink() const noexcept
-		{
-			return &REL::RelocateMemberIfNewer<BSTEventSink<UserEventEnabledEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2C0, 0x2C8);
-		}
-
-		[[nodiscard]] inline BSTEventSink<TESTrackedStatsEvent>* AsTESTrackedStatsEventSink() noexcept
-		{
-			return &REL::RelocateMemberIfNewer<BSTEventSink<TESTrackedStatsEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2C8, 0x2D0);
-		}
-
-		[[nodiscard]] inline const BSTEventSink<TESTrackedStatsEvent>* AsTESTrackedStatsEventSink() const noexcept
-		{
-			return &REL::RelocateMemberIfNewer<BSTEventSink<TESTrackedStatsEvent>>(SKSE::RUNTIME_SSE_1_6_629, this, 0x2C8, 0x2D0);
-		}
+#ifdef ENABLE_SKYRIM_AE
+		RUNTIME_DATA_ACCESSOR_VERSIONED_OPTIONAL_EX(BSTEventSink<BSSystemEvent>, AsBSSystemEventSink, SKSE::RUNTIME_SSE_1_7_99, 0x2D8);
+#endif
 
 		struct PLAYER_RUNTIME_DATA
 		{
@@ -907,249 +910,149 @@ namespace RE
 
 		struct VR_PLAYER_RUNTIME_DATA
 		{
-#define VR_PLAYER_RUNTIME_DATA_CONTENT                                                                                                                                                                                 \
-	std::uint64_t unk3D8;                                                                             /* 3D8 */                                                                                                        \
-	std::uint64_t unk3E0;                                                                             /* 3E0 */                                                                                                        \
-	std::uint64_t unk3E8;                                                                             /* 3E8 */                                                                                                        \
-	VR_NODE_DATA_CONTENT;                                                                             /* 3F0 */                                                                                                        \
-	std::uint64_t      unk680;                                                                        /* 680 */                                                                                                        \
-	std::uint64_t      unk688;                                                                        /* 688 */                                                                                                        \
-	std::uint64_t      unk690;                                                                        /* 690 */                                                                                                        \
-	std::uint64_t      unk698;                                                                        /* 698 */                                                                                                        \
-	std::uint64_t      unk6A0;                                                                        /* 6A0 */                                                                                                        \
-	std::uint64_t      unk6A8[0x5];                                                                   /* 6A8 */                                                                                                        \
-	std::uint32_t      unk6D0;                                                                        /* 6D0 */                                                                                                        \
-	std::uint32_t      isRightHandMainHand;                                                           /* 6D4 - Determined from Settings->VR->MainHand setting */                                                       \
-	std::uint32_t      isLeftHandMainHand;                                                            /* 6D8 - Determined from Settings->VR->MainHand setting  */                                                      \
-	std::uint32_t      unk6DC;                                                                        /* 6DC */                                                                                                        \
-	std::uint64_t      unk6F0[0x5D];                                                                  /* 6F0 */                                                                                                        \
-	mutable BSSpinLock questTargetsLock;                                                              /* 9C8 - Confirmed in ConsoleFunc__Handler::ShowQuestTargets_14032A200*/                                         \
-	CRIME_VALUE_CONTENT;                                                                              /* 9D0 */                                                                                                        \
-	ObjectRefHandle                                         commandWaitMarker;                        /* A30 */                                                                                                        \
-	std::uint32_t                                           padA34;                                   /* A34 */                                                                                                        \
-	BSTHashMap<const TESFaction*, FriendshipFactionsStruct> factionOwnerFriendsMap;                   /* A38 */                                                                                                        \
-	NiPoint3                                                lastKnownGoodPosition;                    /* A68 */                                                                                                        \
-	NiPoint3                                                bulletAutoAim;                            /* A74 - Guessed from 12D3, confirmed is NiPoint3 */                                                             \
-	NiPoint3                                                cachedVelocity;                           /* A80 */                                                                                                        \
-	std::uint32_t                                           padA8C;                                   /* A8C */                                                                                                        \
-	BGSNote*                                                unusedNote;                               /* A90 - Used for unimplemented formtype BGSNote */                                                              \
-	BGSNote*                                                unusedNote2;                              /* A98 - Used for unimplemented formtype BGSNote */                                                              \
-	BSTArray<PerkRankData*>                                 addedPerks;                               /* AA0 these 3 here gotta be fixed - guessed based on ae8 */                                                     \
-	BSTArray<BGSPerk*>                                      perks;                                    /* AB8 guess */                                                                                                  \
-	BSTArray<BGSPerk*>                                      standingStonePerks;                       /* AD0 guess */                                                                                                  \
-	BSTArray<ObjectRefHandle>                               currentMapMarkers;                        /* AE8 confirmed */                                                                                              \
-	BSTArray<BSTTuple<NiPoint3, AITimeStamp>>               velocityArray;                            /* B00 */                                                                                                        \
-	BSTArray<ProjectileHandle>                              runesCast;                                /* B18 */                                                                                                        \
-	BSTArray<void*>                                         imageSpaceModifierAnims1;                 /* B30 */                                                                                                        \
-	BSTArray<void*>                                         imageSpaceModifierAnims2;                 /* B48 */                                                                                                        \
-	BSSimpleList<TESQuestStageItem*>                        questLog;                                 /* B60 */                                                                                                        \
-	BSTArray<BGSInstancedQuestObjective>                    objectives;                               /* B70 */                                                                                                        \
-	BSTHashMap<TESQuest*, BSTArray<TESQuestTarget*>*>       questTargets;                             /* B88 */                                                                                                        \
-	BSTHashMap<UnkKey, UnkValue>                            currentSayOnceInfosMap;                   /* BB8 */                                                                                                        \
-	BSSimpleList<ObjectRefHandle>                           droppedRefList;                           /* BE8 */                                                                                                        \
-	NiTMap<std::uint32_t, std::uint8_t>                     randomDoorSpaceMap;                       /* BF8 */                                                                                                        \
-	TESWorldSpace*                                          cachedWorldSpace;                         /* C18 */                                                                                                        \
-	NiPoint3                                                exteriorPosition;                         /* C20 */                                                                                                        \
-	std::uint32_t                                           padC2C;                                   /* C2C */                                                                                                        \
-	VR_PLAYER_TARGET_LOC                                    queuedTargetLoc;                          /* C30 */                                                                                                        \
-	BSSoundHandle                                           unusedSound;                              /* C80 - Only place it is set is an unused function */                                                           \
-	BSSoundHandle                                           magicFailureSound;                        /* C8C */                                                                                                        \
-	BSSoundHandle                                           shoutFailureSound;                        /* C98 */                                                                                                        \
-	std::uint32_t                                           unkCA4;                                   /* CA4 */                                                                                                        \
-	DialoguePackage*                                        closestConversation;                      /* CA8 */                                                                                                        \
-	std::uint64_t                                           unkCB0;                                   /* CB0 */                                                                                                        \
-	DialoguePackage*                                        aiConversationRunning;                    /* CB8 */                                                                                                        \
-	std::int32_t                                            numberofStealWarnings;                    /* CC0 */                                                                                                        \
-	float                                                   stealWarningTimer;                        /* CC4 */                                                                                                        \
-	std::uint32_t                                           numberofPickpocketWarnings;               /* CC8 - Guess */                                                                                                \
-	float                                                   pickPocketWarningTimer;                   /* CCC */                                                                                                        \
-	AITimeStamp                                             warnToLeaveTimeStamp;                     /* CD0 */                                                                                                        \
-	std::uint32_t                                           unkCD4;                                   /* CD4 */                                                                                                        \
-	ImageSpaceModifierInstanceDOF*                          ironsightsDOFInstance;                    /* CD8 */                                                                                                        \
-	ImageSpaceModifierInstanceDOF*                          vatsDOFInstance;                          /* CE0 */                                                                                                        \
-	ImageSpaceModifierInstanceDOF*                          dynamicDOFInstance;                       /* CE8 */                                                                                                        \
-	float                                                   dynamicDOFFocusTime;                      /* CF0 */                                                                                                        \
-	bool                                                    dynamicDOFFocused;                        /* CF4 */                                                                                                        \
-	NiPoint3                                                dynamicDOFLastAngle;                      /* CF8 */                                                                                                        \
-	NiPoint3                                                dynamicDOFLastPosition;                   /* D04 */                                                                                                        \
-	TESFaction*                                             currentPrisonFaction;                     /* D10 */                                                                                                        \
-	std::int32_t                                            jailSentence;                             /* D18 */                                                                                                        \
-	std::int32_t                                            unkD1C;                                   /* D18 */                                                                                                        \
-	std::uint64_t                                           unkD20;                                   /* D20 */                                                                                                        \
-	QueuedWeapon                                            queuedWeaponAttachs[WEAPON_TYPE::kTotal]; /* D28 - Weapons attach to PlayerCharacter on next frame */                                                      \
-	std::uint32_t                                           vampireFeedDetection;                     /* DC8 */                                                                                                        \
-	std::uint32_t                                           mapMarkerIterator;                        /* DCC */                                                                                                        \
-	RefHandle                                               forceActivateRef;                         /* DD0 */                                                                                                        \
-	PlayerActionObject                                      playerActionObjects[0xF];                 /* DD4 */                                                                                                        \
-	PLAYER_ACTION                                           mostRecentAction;                         /* E88 */                                                                                                        \
-	ActorHandle                                             actorDoingPlayerCommand;                  /* E8C */                                                                                                        \
-	std::uint64_t                                           unkE90;                                   /* E90 */                                                                                                        \
-	VRGrabData                                              grabbedObjectData[VR_DEVICE::kTotal];     /* E98 - */                                                                                                      \
-	float                                                   unkFD0;                                   /* FD0 - Not grabDistance as expected in SE */                                                                   \
-	float                                                   unkFloatFD4;                              /* FD4 */                                                                                                        \
-	std::uint64_t                                           unkFD8;                                   /* FD8 */                                                                                                        \
-	VR_INFO_RUNTIME_DATA_CONTENT;                                                                     /* FE0 */                                                                                                        \
-	std::uint8_t                               unk1120[0xA0];                                         /* 1120 - Unused? */                                                                                             \
-	std::uint32_t                              unkAC0;                                                /* 11C0 */                                                                                                       \
-	std::uint32_t                              unkAC4;                                                /* 11C4 */                                                                                                       \
-	BGSLocation*                               currentLocation;                                       /* 11C8 */                                                                                                       \
-	AITimeStamp                                cachedVelocityTimeStamp;                               /* 11D0 */                                                                                                       \
-	float                                      telekinesisDistance;                                   /* 11D4 */                                                                                                       \
-	float                                      commandTimer;                                          /* 11D8 */                                                                                                       \
-	float                                      sunGazeTimer;                                          /* 11DC - Upon sungazing, counts down from 0.5 seconds. When 0, applies imagespace modifier */                   \
-	TESImageSpaceModifier*                     sunGazeImageSpaceModifier;                             /* 11E0 */                                                                                                       \
-	ActorValue                                 advanceSkill;                                          /* 11E8 - advance values set, then cleared in PlayerSkills::ModSkillPoints surronding ApplyPerkEntry */          \
-	std::uint32_t                              advanceAction;                                         /* 11EC - Part of 10F0 and 11E8 */                                                                               \
-	REX::EnumSet<DEFAULT_OBJECT, std::int32_t> animationObjectAction;                                 /* 11F0 */                                                                                                       \
-	GAME_STATE_DATA_CONTENT;                                                                          /* 11F4 */                                                                                                       \
-	Crime*               resistArrestCrime;                                                           /* 1200 */                                                                                                       \
-	BSTArray<TintMask*>  tintMasks;                                                                   /* 1208 */                                                                                                       \
-	BSTArray<TintMask*>* overlayTintMasks;                                                            /* 1220 */                                                                                                       \
-	RACE_DATA_CONTENT;                                                                                /* 1228 */                                                                                                       \
-	std::uint64_t          unk1240[0x11];                                                             /* 1240 */                                                                                                       \
-	PreTransformationData* preTransformationData;                                                     /* 12C8 - Stores equipped data when transforming to vampire/werewolf, cleared when transforming back to human */ \
+#define VR_PLAYER_RUNTIME_DATA_CONTENT                                                                                                                                                                                                                                                                                                                                                                                                                                  \
+	VR_NODE_DATA_CONTENT;                                                                             /* 3F0 */                                                                                                                                                                                                                                                                                                                                                         \
+	std::uint64_t      unk680;                                                                        /* 680 */                                                                                                                                                                                                                                                                                                                                                         \
+	std::uint64_t      unk688;                                                                        /* 688 */                                                                                                                                                                                                                                                                                                                                                         \
+	std::uint64_t      unk690;                                                                        /* 690 */                                                                                                                                                                                                                                                                                                                                                         \
+	std::uint64_t      unk698;                                                                        /* 698 */                                                                                                                                                                                                                                                                                                                                                         \
+	std::uint64_t      unk6A0;                                                                        /* 6A0 */                                                                                                                                                                                                                                                                                                                                                         \
+	std::uint64_t      unk6A8[0x5];                                                                   /* 6A8 - 40 bytes; likely angle/limit struct. +0x08 = float π, +0x0C = byte 1, +0x14 = hand-index (weapon-node selection), +0x20 low byte = bool gate (UpdateRoomscaleMovement) */                                                                                                                                                                               \
+	std::uint32_t      unk6D0;                                                                        /* 6D0 */                                                                                                                                                                                                                                                                                                                                                         \
+	std::uint32_t      isRightHandMainHand;                                                           /* 6D4 - Likely derived from the bLeftHandedMode:VRInput ini setting; write site not yet traced */                                                                                                                                                                                                                                                                \
+	std::uint32_t      isLeftHandMainHand;                                                            /* 6D8 - see isRightHandMainHand */                                                                                                                                                                                                                                                                                                                               \
+	std::uint32_t      unk6DC;                                                                        /* 6DC */                                                                                                                                                                                                                                                                                                                                                         \
+	std::uint64_t      pad6E0[0x2];                                                                   /* 6E0 - 16-byte undeclared gap (issue #207), real per offsetof probe */                                                                                                                                                                                                                                                                                          \
+	std::uint64_t      unk6F0[0x3];                                                                   /* 6F0 - 24 bytes; VR PC ctor writes 6 consecutive floats with NiPoint3-component init values — 2 NiPoint3 */                                                                                                                                                                                                                                                   \
+	std::uint64_t      pad708;                                                                        /* 708 - 8-byte undeclared gap before hands, real per offsetof probe */                                                                                                                                                                                                                                                                                           \
+	VRPlayerHandData   hands[2];                                                                      /* 710 - per-controller state history (binary-verified via vector_constructor_iterator in PC ctor) */                                                                                                                                                                                                                                                             \
+	std::uint64_t      unk8B0[0x22];                                                                  /* 8B0 - 272 bytes; misc VR state. +0x00-0x27 ctor sentinels/floats; VRPlayerViewState_Init handles +0x28 on: +0x38 float 75.0 (likely FOV), +0x3C/+0x60 NiMatrix3 Identity, +0x84..+0xB3 4× NiPoint3 — VR stereo view state */                                                                                                                                \
+	std::uint64_t      pad9C0;                                                                        /* 9C0 - real gap (binary-verified in Ghidra); do not remove */                                                                                                                                                                                                                                                                                                   \
+	mutable BSSpinLock questTargetsLock;                                                              /* 9C8 - Confirmed via ConsoleFunc::ShowQuestTargets (SE 0x140318C40); VR offset 0x9C8 verified in binary */                                                                                                                                                                                                                                                      \
+	CRIME_VALUE_CONTENT;                                                                              /* 9D0 */                                                                                                                                                                                                                                                                                                                                                         \
+	ObjectRefHandle                                         commandWaitMarker;                        /* A30 */                                                                                                                                                                                                                                                                                                                                                         \
+	std::uint32_t                                           padA34;                                   /* A34 */                                                                                                                                                                                                                                                                                                                                                         \
+	BSTHashMap<const TESFaction*, FriendshipFactionsStruct> factionOwnerFriendsMap;                   /* A38 */                                                                                                                                                                                                                                                                                                                                                         \
+	NiPoint3                                                lastKnownGoodPosition;                    /* A68 */                                                                                                                                                                                                                                                                                                                                                         \
+	NiPoint3                                                bulletAutoAim;                            /* A74 - Guessed from 12D3, confirmed is NiPoint3 */                                                                                                                                                                                                                                                                                                              \
+	NiPoint3                                                cachedVelocity;                           /* A80 */                                                                                                                                                                                                                                                                                                                                                         \
+	std::uint32_t                                           padA8C;                                   /* A8C */                                                                                                                                                                                                                                                                                                                                                         \
+	BGSNote*                                                unusedNote;                               /* A90 - Used for unimplemented formtype BGSNote */                                                                                                                                                                                                                                                                                                               \
+	BGSNote*                                                unusedNote2;                              /* A98 - Used for unimplemented formtype BGSNote */                                                                                                                                                                                                                                                                                                               \
+	BSTArray<PerkRankData*>                                 addedPerks;                               /* AA0 these 3 here gotta be fixed - guessed based on ae8 */                                                                                                                                                                                                                                                                                                      \
+	BSTArray<BGSPerk*>                                      perks;                                    /* AB8 guess */                                                                                                                                                                                                                                                                                                                                                   \
+	BSTArray<BGSPerk*>                                      standingStonePerks;                       /* AD0 guess */                                                                                                                                                                                                                                                                                                                                                   \
+	BSTArray<ObjectRefHandle>                               currentMapMarkers;                        /* AE8 confirmed */                                                                                                                                                                                                                                                                                                                                               \
+	BSTArray<BSTTuple<NiPoint3, AITimeStamp>>               velocityArray;                            /* B00 */                                                                                                                                                                                                                                                                                                                                                         \
+	BSTArray<ProjectileHandle>                              runesCast;                                /* B18 */                                                                                                                                                                                                                                                                                                                                                         \
+	BSTArray<void*>                                         imageSpaceModifierAnims1;                 /* B30 */                                                                                                                                                                                                                                                                                                                                                         \
+	BSTArray<void*>                                         imageSpaceModifierAnims2;                 /* B48 */                                                                                                                                                                                                                                                                                                                                                         \
+	BSSimpleList<TESQuestStageItem*>                        questLog;                                 /* B60 */                                                                                                                                                                                                                                                                                                                                                         \
+	BSTArray<BGSInstancedQuestObjective>                    objectives;                               /* B70 */                                                                                                                                                                                                                                                                                                                                                         \
+	BSTHashMap<TESQuest*, BSTArray<TESQuestTarget*>*>       questTargets;                             /* B88 */                                                                                                                                                                                                                                                                                                                                                         \
+	BSTHashMap<UnkKey, UnkValue>                            currentSayOnceInfosMap;                   /* BB8 */                                                                                                                                                                                                                                                                                                                                                         \
+	BSSimpleList<ObjectRefHandle>                           droppedRefList;                           /* BE8 */                                                                                                                                                                                                                                                                                                                                                         \
+	NiTMap<std::uint32_t, std::uint8_t>                     randomDoorSpaceMap;                       /* BF8 */                                                                                                                                                                                                                                                                                                                                                         \
+	TESWorldSpace*                                          cachedWorldSpace;                         /* C18 */                                                                                                                                                                                                                                                                                                                                                         \
+	NiPoint3                                                exteriorPosition;                         /* C20 */                                                                                                                                                                                                                                                                                                                                                         \
+	std::uint32_t                                           padC2C;                                   /* C2C */                                                                                                                                                                                                                                                                                                                                                         \
+	VR_PLAYER_TARGET_LOC                                    queuedTargetLoc;                          /* C30 */                                                                                                                                                                                                                                                                                                                                                         \
+	BSSoundHandle                                           unusedSound;                              /* C80 - Only place it is set is an unused function */                                                                                                                                                                                                                                                                                                            \
+	BSSoundHandle                                           magicFailureSound;                        /* C8C */                                                                                                                                                                                                                                                                                                                                                         \
+	BSSoundHandle                                           shoutFailureSound;                        /* C98 */                                                                                                                                                                                                                                                                                                                                                         \
+	std::uint32_t                                           unkCA4;                                   /* CA4 */                                                                                                                                                                                                                                                                                                                                                         \
+	DialoguePackage*                                        closestConversation;                      /* CA8 */                                                                                                                                                                                                                                                                                                                                                         \
+	std::uint64_t                                           unkCB0;                                   /* CB0 */                                                                                                                                                                                                                                                                                                                                                         \
+	DialoguePackage*                                        aiConversationRunning;                    /* CB8 */                                                                                                                                                                                                                                                                                                                                                         \
+	std::int32_t                                            numberofStealWarnings;                    /* CC0 */                                                                                                                                                                                                                                                                                                                                                         \
+	float                                                   stealWarningTimer;                        /* CC4 */                                                                                                                                                                                                                                                                                                                                                         \
+	std::uint32_t                                           numberofPickpocketWarnings;               /* CC8 - Guess */                                                                                                                                                                                                                                                                                                                                                 \
+	float                                                   pickPocketWarningTimer;                   /* CCC */                                                                                                                                                                                                                                                                                                                                                         \
+	AITimeStamp                                             warnToLeaveTimeStamp;                     /* CD0 */                                                                                                                                                                                                                                                                                                                                                         \
+	std::uint32_t                                           unkCD4;                                   /* CD4 */                                                                                                                                                                                                                                                                                                                                                         \
+	ImageSpaceModifierInstanceDOF*                          ironsightsDOFInstance;                    /* CD8 */                                                                                                                                                                                                                                                                                                                                                         \
+	ImageSpaceModifierInstanceDOF*                          vatsDOFInstance;                          /* CE0 */                                                                                                                                                                                                                                                                                                                                                         \
+	ImageSpaceModifierInstanceDOF*                          dynamicDOFInstance;                       /* CE8 */                                                                                                                                                                                                                                                                                                                                                         \
+	float                                                   dynamicDOFFocusTime;                      /* CF0 */                                                                                                                                                                                                                                                                                                                                                         \
+	bool                                                    dynamicDOFFocused;                        /* CF4 */                                                                                                                                                                                                                                                                                                                                                         \
+	NiPoint3                                                dynamicDOFLastAngle;                      /* CF8 */                                                                                                                                                                                                                                                                                                                                                         \
+	NiPoint3                                                dynamicDOFLastPosition;                   /* D04 */                                                                                                                                                                                                                                                                                                                                                         \
+	TESFaction*                                             currentPrisonFaction;                     /* D10 */                                                                                                                                                                                                                                                                                                                                                         \
+	std::int32_t                                            jailSentence;                             /* D18 */                                                                                                                                                                                                                                                                                                                                                         \
+	std::int32_t                                            unkD1C;                                   /* D1C */                                                                                                                                                                                                                                                                                                                                                         \
+	std::uint64_t                                           unkD20;                                   /* D20 */                                                                                                                                                                                                                                                                                                                                                         \
+	QueuedWeapon                                            queuedWeaponAttachs[WEAPON_TYPE::kTotal]; /* D28 - Weapons attach to PlayerCharacter on next frame */                                                                                                                                                                                                                                                                                                       \
+	std::uint32_t                                           vampireFeedDetection;                     /* DC8 */                                                                                                                                                                                                                                                                                                                                                         \
+	std::uint32_t                                           mapMarkerIterator;                        /* DCC */                                                                                                                                                                                                                                                                                                                                                         \
+	RefHandle                                               forceActivateRef;                         /* DD0 */                                                                                                                                                                                                                                                                                                                                                         \
+	PlayerActionObject                                      playerActionObjects[0xF];                 /* DD4 */                                                                                                                                                                                                                                                                                                                                                         \
+	PLAYER_ACTION                                           mostRecentAction;                         /* E88 */                                                                                                                                                                                                                                                                                                                                                         \
+	ActorHandle                                             actorDoingPlayerCommand;                  /* E8C */                                                                                                                                                                                                                                                                                                                                                         \
+	std::uint64_t                                           unkE90;                                   /* E90 */                                                                                                                                                                                                                                                                                                                                                         \
+	VRGrabData                                              grabbedObjectData[VR_DEVICE::kTotal];     /* E98 - */                                                                                                                                                                                                                                                                                                                                                       \
+	float                                                   unkFD0;                                   /* FD0 - Not grabDistance as expected in SE */                                                                                                                                                                                                                                                                                                                    \
+	float                                                   unkFloatFD4;                              /* FD4 */                                                                                                                                                                                                                                                                                                                                                         \
+	std::uint64_t                                           unkFD8;                                   /* FD8 */                                                                                                                                                                                                                                                                                                                                                         \
+	VR_INFO_RUNTIME_DATA_CONTENT;                                                                     /* FE0 */                                                                                                                                                                                                                                                                                                                                                         \
+	std::uint8_t                               unk1120[0xA0];                                         /* 1120 - Unused? */                                                                                                                                                                                                                                                                                                                                              \
+	std::uint32_t                              unkAC0;                                                /* 11C0 */                                                                                                                                                                                                                                                                                                                                                        \
+	std::uint32_t                              unkAC4;                                                /* 11C4 */                                                                                                                                                                                                                                                                                                                                                        \
+	BGSLocation*                               currentLocation;                                       /* 11C8 */                                                                                                                                                                                                                                                                                                                                                        \
+	AITimeStamp                                cachedVelocityTimeStamp;                               /* 11D0 */                                                                                                                                                                                                                                                                                                                                                        \
+	float                                      telekinesisDistance;                                   /* 11D4 */                                                                                                                                                                                                                                                                                                                                                        \
+	float                                      commandTimer;                                          /* 11D8 */                                                                                                                                                                                                                                                                                                                                                        \
+	float                                      sunGazeTimer;                                          /* 11DC - Upon sungazing, counts down from 0.5 seconds. When 0, applies imagespace modifier */                                                                                                                                                                                                                                                                    \
+	TESImageSpaceModifier*                     sunGazeImageSpaceModifier;                             /* 11E0 */                                                                                                                                                                                                                                                                                                                                                        \
+	ActorValue                                 advanceSkill;                                          /* 11E8 - advance values set, then cleared in PlayerSkills::ModSkillPoints surronding ApplyPerkEntry */                                                                                                                                                                                                                                                           \
+	std::uint32_t                              advanceAction;                                         /* 11EC - Part of 10F0 and 11E8 */                                                                                                                                                                                                                                                                                                                                \
+	REX::EnumSet<DEFAULT_OBJECT, std::int32_t> animationObjectAction;                                 /* 11F0 */                                                                                                                                                                                                                                                                                                                                                        \
+	GAME_STATE_DATA_CONTENT;                                                                          /* 11F4 */                                                                                                                                                                                                                                                                                                                                                        \
+	Crime*               resistArrestCrime;                                                           /* 1200 */                                                                                                                                                                                                                                                                                                                                                        \
+	BSTArray<TintMask*>  tintMasks;                                                                   /* 1208 */                                                                                                                                                                                                                                                                                                                                                        \
+	BSTArray<TintMask*>* overlayTintMasks;                                                            /* 1220 */                                                                                                                                                                                                                                                                                                                                                        \
+	RACE_DATA_CONTENT;                                                                                /* 1228 */                                                                                                                                                                                                                                                                                                                                                        \
+	std::uint64_t          unk1240[0x11];                                                             /* 1240 - 136 bytes; PERK ENTRY POINT CACHE. xref: PC+0x1288 (unk1240+0x48) read by EPAlchemyEffectHasKeyword; PC+0x1290 (unk1240+0x50) read by EPTemperingItemHasKeyword / EPTemperingItemIsEnchanted. Ctor: 2 iterations of ~0x40 struct, each { uint32 handle@0, BSTArrayHeapAllocator@8, uint32 sentinel@0x18, alchemy_ptr@0x48, tempering_ptr@0x50, ... } */ \
+	PreTransformationData* preTransformationData;                                                     /* 12C8 - Stores equipped data when transforming to vampire/werewolf, cleared when transforming back to human */                                                                                                                                                                                                                                                  \
 	PlayerFlags            playerFlags;                                                               /* 12D0 */
             VR_PLAYER_RUNTIME_DATA_CONTENT
 		};
 
-		[[nodiscard]] inline PLAYER_RUNTIME_DATA& GetPlayerRuntimeData() noexcept
-		{
-			return REL::RelocateMemberIfNewer<PLAYER_RUNTIME_DATA>(SKSE::RUNTIME_SSE_1_6_629, this, 0x3D8, 0x3E0);
-		}
+#define AE1799_SHIFT(offset) (REL::Module::get().version().compare(SKSE::RUNTIME_SSE_1_7_99) == std::strong_ordering::less ? (offset) : (offset) + 8)
 
-		[[nodiscard]] inline const PLAYER_RUNTIME_DATA& GetPlayerRuntimeData() const noexcept
-		{
-			return REL::RelocateMemberIfNewer<PLAYER_RUNTIME_DATA>(SKSE::RUNTIME_SSE_1_6_629, this, 0x3D8, 0x3E0);
-		}
+		// Runtime data accessors
+		RUNTIME_DATA_ACCESSOR_VERSIONED_EX(PLAYER_RUNTIME_DATA, GetPlayerRuntimeData, SKSE::RUNTIME_SSE_1_6_629, 0x3D8, AE1799_SHIFT(0x3E0));
+		// VR's block starts 0x18 later than SE's 0x3D8 anchor (3 extra VR-only BSTEventSink members);
+		// matches GetVRNodeData's own 0x3F0 anchor below.
+		VR_ONLY_POINTER_ACCESSOR(VR_PLAYER_RUNTIME_DATA, GetVRPlayerRuntimeData, 0x3F0);
 
-		[[nodiscard]] inline VR_PLAYER_RUNTIME_DATA& GetVRPlayerRuntimeData() noexcept
-		{
-			return REL::RelocateMember<VR_PLAYER_RUNTIME_DATA>(this, 0, 0x3E0);
-		}
+		RUNTIME_MEMBER_ACCESSOR_VERSIONED(CrimeValue, GetCrimeValue, SKSE::RUNTIME_SSE_1_6_629, 0x3E0, 0x9D0, AE1799_SHIFT(0x3E8));
 
-		[[nodiscard]] inline const VR_PLAYER_RUNTIME_DATA& GetVRPlayerRuntimeData() const noexcept
-		{
-			return REL::RelocateMember<VR_PLAYER_RUNTIME_DATA>(this, 0, 0x3E0);
-		}
+		RUNTIME_MEMBER_ACCESSOR_VERSIONED(RaceData, GetRaceData, SKSE::RUNTIME_SSE_1_6_629, 0xB30, 0x1228, AE1799_SHIFT(0xB38));
 
-		[[nodiscard]] inline CrimeValue& GetCrimeValue() noexcept
-		{
-			if SKYRIM_REL_CONSTEXPR (REL::Module::IsAE()) {
-				if (REL::Module::get().version().compare(SKSE::RUNTIME_SSE_1_6_629) != std::strong_ordering::less) {
-					return REL::RelocateMember<CrimeValue>(this, 0x3E8);
-				}
-			}
-			return REL::RelocateMember<CrimeValue>(this, 0x3E0, 0x9D0);
-		}
+		RUNTIME_MEMBER_ACCESSOR_VERSIONED(GameStateData, GetGameStatsData, SKSE::RUNTIME_SSE_1_6_629, 0xAF8, 0x11F4, AE1799_SHIFT(0xB00));
 
-		[[nodiscard]] inline const CrimeValue& GetCrimeValue() const noexcept
-		{
-			if SKYRIM_REL_CONSTEXPR (REL::Module::IsAE()) {
-				if (REL::Module::get().version().compare(SKSE::RUNTIME_SSE_1_6_629) != std::strong_ordering::less) {
-					return REL::RelocateMember<CrimeValue>(this, 0x3E8);
-				}
-			}
-			return REL::RelocateMember<CrimeValue>(this, 0x3E0, 0x9D0);
-		}
+		using QuestTargetsMap = BSTHashMap<TESQuest*, BSTArray<TESQuestTarget*>*>;
+		RUNTIME_MEMBER_ACCESSOR_VERSIONED(BSSpinLock, GetQuestTargetsLock, SKSE::RUNTIME_SSE_1_6_629, 0x3D8, 0x9C8, AE1799_SHIFT(0x3E0));
+		RUNTIME_MEMBER_ACCESSOR_VERSIONED(BSSimpleList<TESQuestStageItem*>, GetQuestLog, SKSE::RUNTIME_SSE_1_6_629, 0x570, 0xB60, AE1799_SHIFT(0x578));
+		RUNTIME_MEMBER_ACCESSOR_VERSIONED(QuestTargetsMap, GetQuestTargets, SKSE::RUNTIME_SSE_1_6_629, 0x598, 0xB88, AE1799_SHIFT(0x5A0));
 
-		[[nodiscard]] inline RaceData& GetRaceData() noexcept
-		{
-			if SKYRIM_REL_CONSTEXPR (REL::Module::IsAE()) {
-				if (REL::Module::get().version().compare(SKSE::RUNTIME_SSE_1_6_629) != std::strong_ordering::less) {
-					return REL::RelocateMember<RaceData>(this, 0xB38);
-				}
-			}
-			return REL::RelocateMember<RaceData>(this, 0xB30, 0x1228);
-		}
+		RUNTIME_MEMBER_ACCESSOR_VERSIONED(INFO_RUNTIME_DATA, GetInfoRuntimeData, SKSE::RUNTIME_SSE_1_6_629, 0x8E4, 0x8E4, AE1799_SHIFT(0x8EC));
 
-		[[nodiscard]] inline const RaceData& GetRaceData() const noexcept
-		{
-			if SKYRIM_REL_CONSTEXPR (REL::Module::IsAE()) {
-				if (REL::Module::get().version().compare(SKSE::RUNTIME_SSE_1_6_629) != std::strong_ordering::less) {
-					return REL::RelocateMember<RaceData>(this, 0xB38);
-				}
-			}
-			return REL::RelocateMember<RaceData>(this, 0xB30, 0x1228);
-		}
+		RUNTIME_MEMBER_ACCESSOR_VERSIONED(PlayerFlags, GetPlayerFlags, SKSE::RUNTIME_SSE_1_6_629, 0xBD8, 0x12D0, AE1799_SHIFT(0xBE0));
 
-		[[nodiscard]] inline GameStateData& GetGameStatsData() noexcept
-		{
-			if SKYRIM_REL_CONSTEXPR (REL::Module::IsAE()) {
-				if (REL::Module::get().version().compare(SKSE::RUNTIME_SSE_1_6_629) != std::strong_ordering::less) {
-					return REL::RelocateMember<GameStateData>(this, 0xB00);
-				}
-			}
-			return REL::RelocateMember<GameStateData>(this, 0xAF8, 0x11F4);
-		}
+#undef AE1799_SHIFT
 
-		[[nodiscard]] inline const GameStateData& GetGameStatsData() const noexcept
-		{
-			if SKYRIM_REL_CONSTEXPR (REL::Module::IsAE()) {
-				if (REL::Module::get().version().compare(SKSE::RUNTIME_SSE_1_6_629) != std::strong_ordering::less) {
-					return REL::RelocateMember<GameStateData>(this, 0xB00);
-				}
-			}
-			return REL::RelocateMember<GameStateData>(this, 0xAF8, 0x11F4);
-		}
-
-		[[nodiscard]] inline INFO_RUNTIME_DATA& GetInfoRuntimeData() noexcept
-		{
-			if SKYRIM_REL_CONSTEXPR (REL::Module::IsAE()) {
-				if (REL::Module::get().version().compare(SKSE::RUNTIME_SSE_1_6_629) != std::strong_ordering::less) {
-					return REL::RelocateMember<INFO_RUNTIME_DATA>(this, 0x8EC);
-				}
-			}
-			return REL::RelocateMember<INFO_RUNTIME_DATA>(this, 0x8E4, 0);
-		}
-
-		[[nodiscard]] inline const INFO_RUNTIME_DATA& GetInfoRuntimeData() const noexcept
-		{
-			if SKYRIM_REL_CONSTEXPR (REL::Module::IsAE()) {
-				if (REL::Module::get().version().compare(SKSE::RUNTIME_SSE_1_6_629) != std::strong_ordering::less) {
-					return REL::RelocateMember<INFO_RUNTIME_DATA>(this, 0x8EC);
-				}
-			}
-			return REL::RelocateMember<INFO_RUNTIME_DATA>(this, 0x8E4, 0);
-		}
-
-		[[nodiscard]] VR_INFO_RUNTIME_DATA* GetVRInfoRuntimeData() noexcept
-		{
-			if SKYRIM_REL_VR_CONSTEXPR (!REL::Module::IsVR()) {
-				return nullptr;
-			} else {
-				return &REL::RelocateMember<VR_INFO_RUNTIME_DATA>(this, 0, 0xFE0);
-			}
-		}
-
-		[[nodiscard]] const VR_INFO_RUNTIME_DATA* GetVRInfoRuntimeData() const noexcept
-		{
-			if SKYRIM_REL_VR_CONSTEXPR (!REL::Module::IsVR()) {
-				return nullptr;
-			} else {
-				return &REL::RelocateMember<VR_INFO_RUNTIME_DATA>(this, 0, 0xFE0);
-			}
-		}
-		[[nodiscard]] VR_NODE_DATA* GetVRNodeData() noexcept
-		{
-			if SKYRIM_REL_VR_CONSTEXPR (!REL::Module::IsVR()) {
-				return nullptr;
-			} else {
-				return &REL::RelocateMember<VR_NODE_DATA>(this, 0, 0x3F0);
-			}
-		}
-
-		[[nodiscard]] const VR_NODE_DATA* GetVRNodeData() const noexcept
-		{
-			if SKYRIM_REL_VR_CONSTEXPR (!REL::Module::IsVR()) {
-				return nullptr;
-			} else {
-				return &REL::RelocateMember<VR_NODE_DATA>(this, 0, 0x3F0);
-			}
-		}
+		VR_ONLY_POINTER_ACCESSOR(VR_INFO_RUNTIME_DATA, GetVRInfoRuntimeData, 0xFE0);
+		VR_ONLY_POINTER_ACCESSOR(VR_NODE_DATA, GetVRNodeData, 0x3F0);
 
 		// members
-#if defined(EXCLUSIVE_SKYRIM_FLAT)
+#if defined(EXCLUSIVE_SKYRIM_FLAT) && !defined(ENABLE_SKYRIM_AE)
 		PLAYER_RUNTIME_DATA_CONTENT
+#elif defined(EXCLUSIVE_SKYRIM_FLAT)
+	private:
+		std::uint8_t _padPlayerRuntimeData[sizeof(PLAYER_RUNTIME_DATA)];  // use GetPlayerRuntimeData() -- base shifts across AE point releases
+
+	public:
 #elif defined(EXCLUSIVE_SKYRIM_VR)
 		VR_PLAYER_RUNTIME_DATA_CONTENT
 #endif
@@ -1157,16 +1060,11 @@ namespace RE
 	private:
 		bool CenterOnCell_Impl(const char* a_cellName, RE::TESObjectCELL* a_cell);
 	};
-#if defined(EXCLUSIVE_SKYRIM_FLAT)
-#	if defined(EXCLUSIVE_SKYRIM_SE)
-	static_assert(sizeof(PlayerCharacter) == 0xBE0);
-#	else
-	static_assert(sizeof(PlayerCharacter) == 0x9A8);
-#	endif
-#elif defined(EXCLUSIVE_SKYRIM_VR)
-	static_assert(sizeof(PlayerCharacter) == 0x12F0);
-#else
-	static_assert(sizeof(PlayerCharacter) == 0x1A0);
+	STATIC_ASSERT_SIZE(PlayerCharacter, 0xBE0, 0xBE8, 0x12D8, 0x1E8);
+#if defined(EXCLUSIVE_SKYRIM_VR)
+	static_assert(offsetof(PlayerCharacter, questTargetsLock) == 0x9C8);
+	static_assert(offsetof(PlayerCharacter, questTargets) == 0xB88);
+	static_assert(offsetof(PlayerCharacter, questLog) == 0xB60);
 #endif
 }
 #undef PLAYER_RUNTIME_DATA_CONTENT

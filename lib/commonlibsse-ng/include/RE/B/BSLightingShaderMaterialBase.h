@@ -70,9 +70,6 @@ namespace RE
 			static REL::Relocation<func_t> func{ RELOCATION_ID(100004, 106711) };
 			return func(material);
 		}
-
-	private:
-		KEEP_FOR_RE()
 	};
 	static_assert(sizeof(BSLightingShaderMaterialBase) == 0xA0);
 

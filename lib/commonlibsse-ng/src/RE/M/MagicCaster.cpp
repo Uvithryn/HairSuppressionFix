@@ -58,9 +58,9 @@ namespace RE
 	bool MagicCaster::TestProjectilePlacement(const Effect& a_effect, const bhkPickData& a_pickData)
 	{
 		if (auto baseEffect = a_effect.baseEffect) {
-			if (baseEffect->data.delivery == RE::MagicSystem::Delivery::kTargetLocation) {
+			if (baseEffect->data.delivery == MagicSystem::Delivery::kTargetLocation) {
 				if (baseEffect->data.projectileBase) {
-					if (a_pickData.unkC0) {
+					if (a_pickData.pickFailed) {
 						return false;
 					}
 
@@ -68,10 +68,11 @@ namespace RE
 						return false;
 					}
 
-					auto broadPhaseHandle = a_pickData.rayOutput.rootCollidable->broadPhaseHandle;
-					if ((broadPhaseHandle.collisionFilterInfo & 0x7F) != 0x01 &&
-						(broadPhaseHandle.collisionFilterInfo & 0x7F) != 0x0D &&
-						(broadPhaseHandle.collisionFilterInfo & 0x7F) != 0x11) {
+					auto colLayer = a_pickData.rayOutput.rootCollidable->broadPhaseHandle.collisionFilterInfo.GetCollisionLayer();
+
+					if (colLayer != COL_LAYER::kStatic &&
+						colLayer != COL_LAYER::kTerrain &&
+						colLayer != COL_LAYER::kGround) {
 						return false;
 					}
 				}

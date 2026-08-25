@@ -4,6 +4,8 @@
 #include "RE/P/PlayerInputHandler.h"
 #include "RE/T/TESCameraState.h"
 
+#include "REL/Common.h"
+
 namespace RE
 {
 	class NiNode;
@@ -19,18 +21,27 @@ namespace RE
 		~FirstPersonState() override;  // 00
 
 		// override (TESCameraState)
-		void Begin() override;                                               // 01
-		void End() override;                                                 // 02
-		void Update(BSTSmartPointer<TESCameraState>& a_nextState) override;  // 03
-		void GetRotation(NiQuaternion& a_rotation) override;                 // 04
-		void GetTranslation(NiPoint3& a_translation) override;               // 05
-		void SaveGame(BGSSaveFormBuffer* a_buf) override;                    // 06
-		void LoadGame(BGSLoadFormBuffer* a_buf) override;                    // 07
-		void Revert(BGSLoadFormBuffer* a_buf) override;                      // 08
+		void Begin() override;  // 01
+		void End() override;    // 02
+#if defined(EXCLUSIVE_SKYRIM_FLAT)
+		// Function doesn't exist in SE/AE-only builds
+#elif defined(EXCLUSIVE_SKYRIM_VR)
+		void Unk_03() override;  // 03 - VR only
+#else
+		void Unk_03();  // 03 - Multi-runtime
+#endif
+		void Update(BSTSmartPointer<TESCameraState>& a_nextState) override;  // 03/04
+		void GetRotation(NiQuaternion& a_rotation) override;                 // 04/05
+		void GetTranslation(NiPoint3& a_translation) override;               // 05/06
+		void SaveGame(BGSSaveFormBuffer* a_buf) override;                    // 06/07
+		void LoadGame(BGSLoadFormBuffer* a_buf) override;                    // 07/08
+		void Revert(BGSLoadFormBuffer* a_buf) override;                      // 08/09
 
 		// override (PlayerInputHandler)
-		bool CanProcess(InputEvent* a_event) override;                                          // 01
+		bool CanProcess(InputEvent* a_event) override;  // 01
+#ifdef EXCLUSIVE_SKYRIM_VR
 		void ProcessButton(ButtonEvent* a_event, PlayerControlsData* a_movementData) override;  // 04
+#endif
 
 		// members
 		NiPoint3      lastPosition;             // 30
@@ -50,12 +61,6 @@ namespace RE
 		bool          cameraPitchOverride;      // 85
 		std::uint16_t unk86;                    // 86
 		std::uint64_t unk88;                    // 88
-	private:
-		KEEP_FOR_RE()
 	};
-#if defined(EXCLUSIVE_SKYRIM_VR)
-	static_assert(sizeof(FirstPersonState) == 0xA8);
-#else
-	static_assert(sizeof(FirstPersonState) == 0x90);
-#endif
+	STATIC_ASSERT_SIZE(FirstPersonState, 0x90, 0xA8);
 }

@@ -1,0 +1,175 @@
+{
+    find_programver = {
+        ["G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe"] = "19.44.35226",
+        ["C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x64\\rc.exe"] = "10.0.10011.16384"
+    },
+    find_program_msvc_arch_x64_plat_windows_checktoolar = {
+        ["link.exe"] = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\tools\BuildTools\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\link.exe]]
+    },
+    find_program_fetch_package_xmake = {
+        ninja = false,
+        cmake = false
+    },
+    find_program_msvc_arch_x64_plat_windows_checktoolcxx = {
+        ["cl.exe"] = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\tools\BuildTools\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\cl.exe]]
+    },
+    find_program_msvc_arch_x64_plat_windows_checktoolcc = {
+        ["cl.exe"] = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\tools\BuildTools\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\cl.exe]]
+    },
+    find_program = {
+        nim = false,
+        git = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\tools\git\cmd\git.exe]],
+        ["7z"] = [[C:\ClibDT\tools\xmake\winenv\bin\7z]],
+        gzip = false,
+        ["cl.exe"] = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\tools\BuildTools\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\cl.exe]],
+        ["G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe"] = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\tools\BuildTools\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\cl.exe]],
+        ["C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x64\\rc.exe"] = [[C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\rc.exe]]
+    },
+    find_program_fetch_package_system = {
+        ninja = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\tools\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja\ninja]],
+        cmake = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\tools\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake]]
+    },
+    find_program_msvc_arch_x64_plat_windows_checktoolmrc = {
+        ["rc.exe"] = [[C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\rc.exe]]
+    },
+    find_programver_fetch_package_system = {
+        ["G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake"] = "3.31.6-msvc6",
+        ["G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\Ninja\\ninja"] = "1.12.1"
+    },
+    find_program_msvc_arch_x64_plat_windows_checktoolsh = {
+        ["link.exe"] = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\tools\BuildTools\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\link.exe]]
+    },
+    find_package_windows_x64_fetch_package_xmake = {
+        ["xmake::rapidcsv_3ea9c5686c084d99b7090d143af1b725_release_v8.92_external"] = {
+            license = "BSD-3-Clause",
+            version = "v8.92",
+            sysincludedirs = {
+                [[C:\Users\Murphy\AppData\Local\.xmake\packages\r\rapidcsv\v8.92\3ea9c5686c084d99b7090d143af1b725\include]]
+            }
+        },
+        ["xmake::spdlog_1053dccb2da94316b3bef3cb1db15374_release_v1.16.0_external"] = {
+            static = true,
+            defines = {
+                "SPDLOG_COMPILED_LIB",
+                "SPDLOG_USE_STD_FORMAT",
+                "SPDLOG_WCHAR_TO_UTF8_SUPPORT"
+            },
+            linkdirs = {
+                [[C:\Users\Murphy\AppData\Local\.xmake\packages\s\spdlog\v1.16.0\1053dccb2da94316b3bef3cb1db15374\lib]]
+            },
+            links = {
+                "spdlog"
+            },
+            libfiles = {
+                [[C:\Users\Murphy\AppData\Local\.xmake\packages\s\spdlog\v1.16.0\1053dccb2da94316b3bef3cb1db15374\lib\spdlog.lib]]
+            },
+            license = "MIT",
+            version = "v1.16.0",
+            sysincludedirs = {
+                [[C:\Users\Murphy\AppData\Local\.xmake\packages\s\spdlog\v1.16.0\1053dccb2da94316b3bef3cb1db15374\include]]
+            }
+        },
+        ["xmake::directxmath_b43cee1705a040bdb171c586b0ad9685_release_2024.02_external"] = {
+            license = "MIT",
+            version = "2024.02",
+            sysincludedirs = {
+                [[C:\Users\Murphy\AppData\Local\.xmake\packages\d\directxmath\2024.02\b43cee1705a040bdb171c586b0ad9685\include\directxmath]]
+            }
+        },
+        ["xmake::directxtk_f6fb9eaf439246fdb823f48a8816ec0c_release_24.2.0_external"] = {
+            static = true,
+            links = {
+                "DirectXTK"
+            },
+            linkdirs = {
+                [[C:\Users\Murphy\AppData\Local\.xmake\packages\d\directxtk\24.2.0\f6fb9eaf439246fdb823f48a8816ec0c\lib]]
+            },
+            version = "24.2.0",
+            libfiles = {
+                [[C:\Users\Murphy\AppData\Local\.xmake\packages\d\directxtk\24.2.0\f6fb9eaf439246fdb823f48a8816ec0c\lib\DirectXTK.lib]]
+            },
+            sysincludedirs = {
+                [[C:\Users\Murphy\AppData\Local\.xmake\packages\d\directxtk\24.2.0\f6fb9eaf439246fdb823f48a8816ec0c\include]]
+            }
+        }
+    },
+    find_program_msvc_arch_x64_plat_windows_checktoolld = {
+        ["link.exe"] = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\tools\BuildTools\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\link.exe]]
+    },
+    ["lib.detect.has_flags"] = {
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd4068"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd5220"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/diagnostics:caret"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/fp:contract"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/cgthreads8"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/Zc:templateScope"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd4582"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd4061"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx__-nologo_-O2"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/Zc:preprocessor"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd5105"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/external:W0"] = true,
+        ["windows_x64_C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x64\\rc.exe_10.0.10011.16384_mrc_mrcflags__-nologo"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxflags_-nologo_cl_sourceDependencies"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxflags_-nologo_-DNDEBUG"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd4686"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd5027"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd4266"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd4514"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/permissive-"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd4625"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd4371"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd4710"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd4623"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd4200"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd4005"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxflags_-nologo_cl_external_includedir"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd4711"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/EHsc"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxflags_-nologo_-std:c++23"] = false,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd4820"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/guard:cf-"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd4264"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd5082"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd4265"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/fp:except-"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd5026"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/we4715"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/bigobj"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd5204"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd4201"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd4324"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd5045"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd5053"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/Zc:enumTypes"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd4626"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxxflags_-nologo_/wd4583"] = true,
+        ["windows_x64_G:\\SkyrimSE_MO2\\tools\\SKSE_Dev\\tools\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\cl.exe_19.44.35226_cxx_cxflags_-nologo_-std:c++latest"] = true
+    },
+    ["core.tools.rc.has_flags"] = {
+        ["C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x64\\rc.exe_10.0.10011.16384"] = {
+            ["-fm"] = true,
+            ["-ln"] = true,
+            ["-l"] = true,
+            ["-gn"] = true,
+            ["-q"] = true,
+            ["-r"] = true,
+            ["-sl"] = true,
+            ["-w"] = true,
+            ["-x"] = true,
+            ["-d"] = true,
+            ["-c"] = true,
+            ["-g"] = true,
+            ["-fo"] = true,
+            ["-nologo"] = true,
+            ["-n"] = true,
+            ["-u"] = true,
+            ["-i"] = true,
+            ["-g1"] = true,
+            ["-g2"] = true,
+            ["-y"] = true,
+            ["-v"] = true,
+            ["-8"] = true
+        }
+    }
+}

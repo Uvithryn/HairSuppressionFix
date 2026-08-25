@@ -27,7 +27,5 @@ namespace RE
 
 		// members
 		Data data;  // ??
-	private:
-		KEEP_FOR_RE()
 	};
 }

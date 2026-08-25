@@ -68,6 +68,7 @@ namespace RE
 		static_assert(sizeof(World) == 0x70);
 	}
 
+	class NiNode;
 	class TESWorldSpace;
 	struct IMapCameraCallbacks;
 
@@ -80,7 +81,7 @@ namespace RE
 		~MapCamera() override;  // 00
 
 		// add
-		virtual void Unk_03(void);  // 03
+		virtual void SetMapCameraRoot(NiNode* a_root, const NiPoint3& a_mapPos);  // 03
 
 		// members
 		BSTPoint2<float>                             unk38;       // 38
@@ -97,8 +98,6 @@ namespace RE
 		std::uint8_t                                 pad89;       // 89
 		std::uint16_t                                pad8A;       // 8A
 		std::uint32_t                                pad8C;       // 8C
-	private:
-		KEEP_FOR_RE()
 	};
 	static_assert(sizeof(MapCamera) == 0x90);
 }

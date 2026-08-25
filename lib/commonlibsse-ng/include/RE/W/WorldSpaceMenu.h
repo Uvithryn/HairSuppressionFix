@@ -75,15 +75,6 @@ namespace RE
 		bool                      queueUpdateFixup{ false };      // 52 - Update menuNode immediately, or on next MAIN_DRAW when calling Unk_09
 		std::uint8_t              pad53{ 0 };
 		std::uint32_t             pad54{ 0 };
-
-	private:
-		KEEP_FOR_RE()
 	};
-#if defined(EXCLUSIVE_SKYRIM_FLAT)
-	static_assert(sizeof(WorldSpaceMenu) == 0x48);
-#elif defined(EXCLUSIVE_SKYRIM_VR)
-	static_assert(sizeof(WorldSpaceMenu) == 0x58);
-#else
-	static_assert(sizeof(WorldSpaceMenu) == 0x40);
-#endif
+	STATIC_ASSERT_SIZE(WorldSpaceMenu, 0x48, 0x48, 0x58, 0x40);
 }

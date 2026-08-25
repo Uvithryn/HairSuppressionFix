@@ -8,6 +8,7 @@
 #include "RE/M/MenuEventHandler.h"
 #include "RE/N/NiPoint3.h"
 #include "RE/N/NiSmartPointer.h"
+#include "REL/RuntimeDataAccessors.h"
 #include "SKSE/Version.h"
 
 namespace RE
@@ -39,6 +40,10 @@ namespace RE
 
 		static Inventory3DManager* GetSingleton();
 
+		static void SetMouseRotation(bool a_active);
+		static void StartMouseRotation() { SetMouseRotation(true); }
+		static void StopMouseRotation() { SetMouseRotation(false); }
+
 		void Begin3D(INTERFACE_LIGHT_SCHEME a_scheme);
 		void End3D();
 		void LoadInventoryItem(InventoryEntryData* a_objDesc);
@@ -64,16 +69,7 @@ namespace RE
 		};
 		static_assert(sizeof(RUNTIME_DATA) == 0x108);
 
-		[[nodiscard]] inline RUNTIME_DATA& GetRuntimeData() noexcept
-		{
-			return REL::RelocateMemberIfNewer<RUNTIME_DATA>(SKSE::RUNTIME_SSE_1_6_629, this, 0x58, 0x60);
-		}
-
-		[[nodiscard]] inline const RUNTIME_DATA& GetRuntimeData() const noexcept
-		{
-			return REL::RelocateMemberIfNewer<RUNTIME_DATA>(SKSE::RUNTIME_SSE_1_6_629, this, 0x58, 0x60);
-		}
-
+		RUNTIME_DATA_ACCESSOR_VERSIONED(RUNTIME_DATA, SKSE::RUNTIME_SSE_1_6_629, 0x58, 0x60);
 		// members
 		std::uint8_t           unk011;              // 011
 		std::uint16_t          unk012;              // 012
@@ -88,8 +84,6 @@ namespace RE
 #ifndef ENABLE_SKYRIM_AE
 		RUNTIME_DATA_CONTENT;
 #endif
-	private:
-		KEEP_FOR_RE()
 	};
 #ifndef ENABLE_SKYRIM_AE
 	static_assert(sizeof(Inventory3DManager) == 0x160);

@@ -3,8 +3,13 @@
 #include "RE/I/ImageSpaceData.h"
 #include "RE/I/ImageSpaceTexture.h"
 #include "RE/N/NiColor.h"
+#include "RE/N/NiRect.h"
 #include "RE/N/NiSmartPointer.h"
 #include "RE/N/NiTArray.h"
+#include <algorithm>
+#include <array>
+#include <ranges>
+#include <vector>
 
 namespace RE
 {
@@ -15,168 +20,289 @@ namespace RE
 	class ImageSpaceManager
 	{
 	public:
-		enum ImageSpaceEffectEnum
-		{
-			WorldMap = 0,                                  // ImageSpaceEffectWorldMap
-			Refraction = 1,                                // ImageSpaceEffectRefraction
-			ISFXAA = 2,                                    // BSImagespaceShaderFXAA
-			DepthOfField = 3,                              // ImageSpaceEffectDepthOfField
-			RadialBlur = 5,                                // ImageSpaceEffectRadialBlur
-			FullScreenBlur = 6,                            // ImageSpaceEffectFullScreenBlur
-			GetHit = 7,                                    // ImageSpaceEffectGetHit
-			Map = 8,                                       // ImageSpaceEffectMap
-			Blur3 = 9,                                     // ImageSpaceEffectBlur
-			Blur5 = 10,                                    // ImageSpaceEffectBlur
-			Blur7 = 11,                                    // ImageSpaceEffectBlur
-			Blur9 = 12,                                    // ImageSpaceEffectBlur
-			Blur11 = 13,                                   // ImageSpaceEffectBlur
-			Blur13 = 14,                                   // ImageSpaceEffectBlur
-			Blur15 = 15,                                   // ImageSpaceEffectBlur
-			BlurNonHDR3 = 16,                              // ImageSpaceEffectBlur
-			BlurNonHDR5 = 17,                              // ImageSpaceEffectBlur
-			BlurNonHDR7 = 18,                              // ImageSpaceEffectBlur
-			BlurNonHDR9 = 19,                              // ImageSpaceEffectBlur
-			BlurNonHDR11 = 20,                             // ImageSpaceEffectBlur
-			BlurNonHDR13 = 21,                             // ImageSpaceEffectBlur
-			BlurNonHDR15 = 22,                             // ImageSpaceEffectBlur
-			BlurBrightPass3 = 23,                          // ImageSpaceEffectBlur
-			BlurBrightPass5 = 24,                          // ImageSpaceEffectBlur
-			BlurBrightPass7 = 25,                          // ImageSpaceEffectBlur
-			BlurBrightPass9 = 26,                          // ImageSpaceEffectBlur
-			BlurBrightPass11 = 27,                         // ImageSpaceEffectBlur
-			BlurBrightPass13 = 28,                         // ImageSpaceEffectBlur
-			BlurBrightPass15 = 29,                         // ImageSpaceEffectBlur
-			HDR = 30,                                      // ImageSpaceEffectHDR
-			WaterDisplacement = 31,                        // ImageSpaceEffectWaterDisplacement
-			VolumetricLighting = 32,                       // ImageSpaceEffectVolumetricLighting
-			Noise = 33,                                    // ImageSpaceEffectNoise
-			ISCopy = 34,                                   // BSImagespaceShaderCopy
-			ISCopyDynamicFetchDisabled = 35,               // BSImagespaceShaderCopyDynamicFetchDisabled
-			ISCopyScaleBias = 36,                          // BSImagespaceShaderCopyScaleBias
-			ISCopyCustomViewport = 37,                     // BSImagespaceShaderCopyCustomViewport
-			ISCopyGrayScale = 38,                          // BSImagespaceShaderGreyScale
-			ISRefraction = 39,                             // BSImagespaceShaderRefraction
-			ISDoubleVision = 40,                           // BSImagespaceShaderDoubleVision
-			ISCopyTextureMask = 41,                        // BSImagespaceShaderTextureMask
-			ISMap = 42,                                    // BSImagespaceShaderMap
-			ISWorldMap = 43,                               // BSImagespaceShaderWorldMap
-			ISWorldMapNoSkyBlur = 44,                      // BSImagespaceShaderWorldMapNoSkyBlur
-			ISDepthOfField = 45,                           // BSImagespaceShaderDepthOfField
-			ISDepthOfFieldFogged = 46,                     // BSImagespaceShaderDepthOfFieldFogged
-			ISDepthOfFieldMaskedFogged = 47,               // BSImagespaceShaderDepthOfFieldMaskedFogged
-			ISDistantBlur = 49,                            // BSImagespaceShaderDistantBlur
-			ISDistantBlurFogged = 50,                      // BSImagespaceShaderDistantBlurFogged
-			ISDistantBlurMaskedFogged = 51,                // BSImagespaceShaderDistantBlurMaskedFogged
-			ISRadialBlur = 52,                             // BSImagespaceShaderRadialBlur
-			ISRadialBlurMedium = 53,                       // BSImagespaceShaderRadialBlurMedium
-			ISRadialBlurHigh = 54,                         // BSImagespaceShaderRadialBlurHigh
-			ISHDRTonemapBlendCinematic = 55,               // BSImagespaceShaderHDRTonemapBlendCinematic
-			ISHDRTonemapBlendCinematicFade = 56,           // BSImagespaceShaderHDRTonemapBlendCinematicFade
-			ISHDRDownSample16 = 57,                        // BSImagespaceShaderHDRDownSample16
-			ISHDRDownSample4 = 58,                         // BSImagespaceShaderHDRDownSample4
-			ISHDRDownSample16Lum = 59,                     // BSImagespaceShaderHDRDownSample16Lum
-			ISHDRDownSample4RGB2Lum = 60,                  // BSImagespaceShaderHDRDownSample4RGB2Lum
-			ISHDRDownSample4LumClamp = 61,                 // BSImagespaceShaderHDRDownSample4LumClamp
-			ISHDRDownSample4LightAdapt = 62,               // BSImagespaceShaderHDRDownSample4LightAdapt
-			ISHDRDownSample16LumClamp = 63,                // BSImagespaceShaderHDRDownSample16LumClamp
-			ISHDRDownSample16LightAdapt = 64,              // BSImagespaceShaderHDRDownSample16LightAdapt
-			ISBlur3 = 65,                                  // BSImagespaceShaderBlur3
-			ISBlur5 = 66,                                  // BSImagespaceShaderBlur5
-			ISBlur7 = 67,                                  // BSImagespaceShaderBlur7
-			ISBlur9 = 68,                                  // BSImagespaceShaderBlur9
-			ISBlur11 = 69,                                 // BSImagespaceShaderBlur11
-			ISBlur13 = 70,                                 // BSImagespaceShaderBlur13
-			ISBlur15 = 71,                                 // BSImagespaceShaderBlur15
-			ISNonHDRBlur3 = 72,                            // BSImagespaceShaderNonHDRBlur3
-			ISNonHDRBlur5 = 73,                            // BSImagespaceShaderNonHDRBlur5
-			ISNonHDRBlur7 = 74,                            // BSImagespaceShaderNonHDRBlur7
-			ISNonHDRBlur9 = 75,                            // BSImagespaceShaderNonHDRBlur9
-			ISNonHDRBlur11 = 76,                           // BSImagespaceShaderNonHDRBlur11
-			ISNonHDRBlur13 = 77,                           // BSImagespaceShaderNonHDRBlur13
-			ISNonHDRBlur15 = 78,                           // BSImagespaceShaderNonHDRBlur15
-			ISBrightPassBlur3 = 79,                        // BSImagespaceShaderBrightPassBlur3
-			ISBrightPassBlur5 = 80,                        // BSImagespaceShaderBrightPassBlur5
-			ISBrightPassBlur7 = 81,                        // BSImagespaceShaderBrightPassBlur7
-			ISBrightPassBlur9 = 82,                        // BSImagespaceShaderBrightPassBlur9
-			ISBrightPassBlur11 = 83,                       // BSImagespaceShaderBrightPassBlur11
-			ISBrightPassBlur13 = 84,                       // BSImagespaceShaderBrightPassBlur13
-			ISBrightPassBlur15 = 85,                       // BSImagespaceShaderBrightPassBlur15
-			ISWaterDisplacementClearSimulation = 86,       // BSImagespaceShaderWaterDisplacementClearSimulation
-			ISWaterDisplacementTexOffset = 87,             // BSImagespaceShaderWaterDisplacementTexOffset
-			ISWaterDisplacementWadingRipple = 88,          // BSImagespaceShaderWaterDisplacementWadingRipple
-			ISWaterDisplacementRainRipple = 89,            // BSImagespaceShaderWaterDisplacementRainRipple
-			ISWaterWadingHeightmap = 90,                   // BSImagespaceShaderWaterWadingHeightmap
-			ISWaterRainHeightmap = 91,                     // BSImagespaceShaderWaterRainHeightmap
-			ISWaterBlendHeightmaps = 92,                   // BSImagespaceShaderWaterBlendHeightmaps
-			ISWaterSmoothHeightmap = 93,                   // BSImagespaceShaderWaterSmoothHeightmap
-			ISWaterDisplacementNormals = 94,               // BSImagespaceShaderWaterDisplacementNormals
-			ISNoiseScrollAndBlend = 95,                    // BSImagespaceShaderNoiseScrollAndBlend
-			ISNoiseNormalmap = 96,                         // BSImagespaceShaderNoiseNormalmap
-			ISVolumetricLighting = 97,                     // BSImagespaceShaderVolumetricLighting
-			ISLocalMap = 98,                               // BSImagespaceShaderLocalMap, VR 101 Instead BSImagespaceShaderCopyDepthBuffer, also 99, 100 with added TargetSize parameters
-			ISAlphaBlend = 99,                             // BSImagespaceShaderAlphaBlend, VR 102
-			ISLensFlare = 100,                             // BSImagespaceShaderLensFlare
-			ISLensFlareVisibility = 101,                   // BSImagespaceShaderLensFlareVisibility
-			ISApplyReflections = 102,                      // BSImagespaceShaderApplyReflections, VR 105
-			ISApplyVolumetricLighting = 103,               // BSImagespaceShaderISApplyVolumetricLighting, VR 106
-			ISBasicCopy = 104,                             // BSImagespaceShaderISBasicCopy
-			ISBlur = 105,                                  // BSImagespaceShaderISBlur
-			ISVolumetricLightingBlurHCS = 106,             // BSImagespaceShaderISVolumetricLightingBlurHCS
-			ISVolumetricLightingBlurVCS = 107,             // BSImagespaceShaderISVolumetricLightingBlurVCS, VR 110
-			ISReflectionBlurHCS = 108,                     // BSImagespaceShaderReflectionBlurHCS
-			ISReflectionBlurVCS = 109,                     // BSImagespaceShaderReflectionBlurVCS
-			ISParallaxMaskBlurHCS = 110,                   // BSImagespaceShaderISParallaxMaskBlurHCS
-			ISParallaxMaskBlurVCS = 111,                   // BSImagespaceShaderISParallaxMaskBlurVCS
-			ISDepthOfFieldBlurHCS = 112,                   // BSImagespaceShaderISDepthOfFieldBlurHCS
-			ISDepthOfFieldBlurVCS = 113,                   // BSImagespaceShaderISDepthOfFieldBlurVCS
-			ISCompositeVolumetricLighting = 114,           // BSImagespaceShaderISCompositeVolumetricLighting
-			ISCompositeLensFlare = 115,                    // BSImagespaceShaderISCompositeLensFlare
-			ISCompositeLensFlareVolumetricLighting = 116,  // BSImagespaceShaderISCompositeLensFlareVolumetricLighting
-			ISCopySubRegionCS = 117,                       // BSImagespaceShaderISCopySubRegionCS
-			ISDebugSnow = 118,                             // BSImagespaceShaderISDebugSnow, VR 121
-			ISDownsample = 119,                            // BSImagespaceShaderISDownsample
-			ISDownsampleIgnoreBrightest = 120,             // BSImagespaceShaderISDownsampleIgnoreBrightest
-			ISDownsampleCS = 121,                          // BSImagespaceShaderISDownsampleCS
-			ISDownsampleIgnoreBrightestCS = 122,           // BSImagespaceShaderISDownsampleIgnoreBrightestCS
-			ISExp = 123,                                   // BSImagespaceShaderISExp, VR 128, VR 129 is "BSImagespaceShaderISFullScreenVR"
-			ISIBLensFlares = 124,                          // BSImagespaceShaderISIBLensFlares, VR 130
-			ISLightingComposite = 125,                     // BSImagespaceShaderISLightingComposite
-			ISLightingCompositeNoDirectionalLight = 126,   // BSImagespaceShaderISLightingCompositeNoDirectionalLight
-			ISLightingCompositeMenu = 127,                 // BSImagespaceShaderISLightingCompositeMenu, VR has BSImagespaceShaderISDiffScaleDownsampleDepthBufferCS
-			ISPerlinNoiseCS = 128,                         // BSImagespaceShaderISPerlinNoiseCS
-			ISPerlinNoise2DCS = 129,                       // BSImagespaceShaderISPerlinNoise2DCS, VR 135
-			ISReflectionsRayTracing = 130,                 // BSImagespaceShaderReflectionsRayTracing, VR 145
-			ISReflectionsDebugSpecMask = 131,              // BSImagespaceShaderReflectionsDebugSpecMask, VR 146
-			ISSAOBlurH = 132,                              // BSImagespaceShaderISSAOBlurH
-			ISSAOBlurV = 133,                              // BSImagespaceShaderISSAOBlurV
-			ISSAOBlurHCS = 134,                            // BSImagespaceShaderISSAOBlurHCS
-			ISSAOBlurVCS = 135,                            // BSImagespaceShaderISSAOBlurVCS
-			ISSAOCameraZ = 136,                            // BSImagespaceShaderISSAOCameraZ, VR 151, instead BSImagespaceShaderTransformLvl7PreTest at 136, BSImagespaceShaderLvl6PreTest at 137, BSImagespaceShaderLvl5PreTest at 138, BSImagespaceShaderLvl4PreTest at 139, 3 at 140, 2 at 141, 1 at 142 CreateBSImagespaceShaderLvl0PreTest at 143
-			ISSAOCameraZAndMipsCS = 137,                   // BSImagespaceShaderISSAOCameraZAndMipsCS
-			ISSAOCompositeSAO = 138,                       // BSImagespaceShaderISSAOCompositeSAO
-			ISSAOCompositeFog = 139,                       // BSImagespaceShaderISSAOCompositeFog
-			ISSAOCompositeSAOFog = 140,                    // BSImagespaceShaderISSAOCompositeSAOFog
-			ISMinify = 141,                                // BSImagespaceShaderISMinify
-			ISMinifyContrast = 142,                        // BSImagespaceShaderISMinifyContrast, VR has "BSImagespaceShaderLvl1PreTest" instead
-			ISSAORawAO = 143,                              // BSImagespaceShaderISSAORawAO
-			ISSAORawAONoTemporal = 144,                    // BSImagespaceShaderISSAORawAONoTemporal, instead VR CreateBSImagespaceShaderSetupPreTest at 144
-			ISSAORawAOCS = 145,                            // BSImagespaceShaderISSAORawAOCS
-			ISSILComposite = 146,                          // BSImagespaceShaderISSILComposite
-			ISSILRawInd = 147,                             // BSImagespaceShaderISSILRawInd
-			ISSimpleColor = 148,                           // BSImagespaceShaderISSimpleColor
-			ISDisplayDepth = 149,                          // BSImagespaceShaderISDisplayDepth
-			ISSnowSSS = 150,                               // BSImagespaceShaderISSnowSSS, VR 165
-			ISTemporalAA = 151,                            // BSImagespaceShaderISTemporalAA, VR 166
-			ISTemporalAA_UI = 152,                         // BSImagespaceShaderISTemporalAA_UI
-			ISTemporalAA_Water = 153,                      // BSImagespaceShaderISTemporalAA_Water, VR 168
-			ISUpsampleDynamicResolution = 154,             // BSImagespaceShaderISUpsampleDynamicResolution
-			ISWaterBlend = 155,                            // BSImagespaceShaderISWaterBlend
-			ISUnderwaterMask = 156,                        // BSImagespaceShaderISUnderwaterMask
-			ISWaterFlow = 157,                             // BSImagespaceShaderWaterFlow, VR 172
+#define IMAGE_SPACE_EFFECTS                                                                                                     \
+	X(WorldMap, 0)     /* ImageSpaceEffectWorldMap */                                                                           \
+	X(Refraction, 1)   /* ImageSpaceEffectRefraction */                                                                         \
+	X(ISFXAA, 2)       /* BSImagespaceShaderFXAA */                                                                             \
+	X(DepthOfField, 3) /* ImageSpaceEffectDepthOfField */                                                                       \
+	/* Missing SE 4 */                                                                                                          \
+	X(RadialBlur, 5)                  /* ImageSpaceEffectRadialBlur */                                                          \
+	X(FullScreenBlur, 6)              /* ImageSpaceEffectFullScreenBlur */                                                      \
+	X(GetHit, 7)                      /* ImageSpaceEffectGetHit */                                                              \
+	X(Map, 8)                         /* ImageSpaceEffectMap */                                                                 \
+	X(Blur3, 9)                       /* ImageSpaceEffectBlur */                                                                \
+	X(Blur5, 10)                      /* ImageSpaceEffectBlur */                                                                \
+	X(Blur7, 11)                      /* ImageSpaceEffectBlur */                                                                \
+	X(Blur9, 12)                      /* ImageSpaceEffectBlur */                                                                \
+	X(Blur11, 13)                     /* ImageSpaceEffectBlur */                                                                \
+	X(Blur13, 14)                     /* ImageSpaceEffectBlur */                                                                \
+	X(Blur15, 15)                     /* ImageSpaceEffectBlur */                                                                \
+	X(BlurNonHDR3, 16)                /* ImageSpaceEffectBlur */                                                                \
+	X(BlurNonHDR5, 17)                /* ImageSpaceEffectBlur */                                                                \
+	X(BlurNonHDR7, 18)                /* ImageSpaceEffectBlur */                                                                \
+	X(BlurNonHDR9, 19)                /* ImageSpaceEffectBlur */                                                                \
+	X(BlurNonHDR11, 20)               /* ImageSpaceEffectBlur */                                                                \
+	X(BlurNonHDR13, 21)               /* ImageSpaceEffectBlur */                                                                \
+	X(BlurNonHDR15, 22)               /* ImageSpaceEffectBlur */                                                                \
+	X(BlurBrightPass3, 23)            /* ImageSpaceEffectBlur */                                                                \
+	X(BlurBrightPass5, 24)            /* ImageSpaceEffectBlur */                                                                \
+	X(BlurBrightPass7, 25)            /* ImageSpaceEffectBlur */                                                                \
+	X(BlurBrightPass9, 26)            /* ImageSpaceEffectBlur */                                                                \
+	X(BlurBrightPass11, 27)           /* ImageSpaceEffectBlur */                                                                \
+	X(BlurBrightPass13, 28)           /* ImageSpaceEffectBlur */                                                                \
+	X(BlurBrightPass15, 29)           /* ImageSpaceEffectBlur */                                                                \
+	X(HDR, 30)                        /* ImageSpaceEffectHDR */                                                                 \
+	X(WaterDisplacement, 31)          /* ImageSpaceEffectWaterDisplacement */                                                   \
+	X(VolumetricLighting, 32)         /* ImageSpaceEffectVolumetricLighting */                                                  \
+	X(Noise, 33)                      /* ImageSpaceEffectNoise */                                                               \
+	X(ISCopy, 34)                     /* BSImagespaceShaderCopy */                                                              \
+	X(ISCopyDynamicFetchDisabled, 35) /* BSImagespaceShaderCopyDynamicFetchDisabled */                                          \
+	X(ISCopyScaleBias, 36)            /* BSImagespaceShaderCopyScaleBias */                                                     \
+	X(ISCopyCustomViewport, 37)       /* BSImagespaceShaderCopyCustomViewport */                                                \
+	X(ISCopyGrayScale, 38)            /* BSImagespaceShaderGreyScale */                                                         \
+	X(ISRefraction, 39)               /* BSImagespaceShaderRefraction */                                                        \
+	X(ISDoubleVision, 40)             /* BSImagespaceShaderDoubleVision */                                                      \
+	X(ISCopyTextureMask, 41)          /* BSImagespaceShaderTextureMask */                                                       \
+	X(ISMap, 42)                      /* BSImagespaceShaderMap */                                                               \
+	X(ISWorldMap, 43)                 /* BSImagespaceShaderWorldMap */                                                          \
+	X(ISWorldMapNoSkyBlur, 44)        /* BSImagespaceShaderWorldMapNoSkyBlur */                                                 \
+	X(ISDepthOfField, 45)             /* BSImagespaceShaderDepthOfField */                                                      \
+	X(ISDepthOfFieldFogged, 46)       /* BSImagespaceShaderDepthOfFieldFogged */                                                \
+	X(ISDepthOfFieldMaskedFogged, 47) /* BSImagespaceShaderDepthOfFieldMaskedFogged */                                          \
+	/* Missing SE 48 */                                                                                                         \
+	X(ISDistantBlur, 49)                                 /* BSImagespaceShaderDistantBlur */                                    \
+	X(ISDistantBlurFogged, 50)                           /* BSImagespaceShaderDistantBlurFogged */                              \
+	X(ISDistantBlurMaskedFogged, 51)                     /* BSImagespaceShaderDistantBlurMaskedFogged */                        \
+	X(ISRadialBlur, 52)                                  /* BSImagespaceShaderRadialBlur */                                     \
+	X(ISRadialBlurMedium, 53)                            /* BSImagespaceShaderRadialBlurMedium */                               \
+	X(ISRadialBlurHigh, 54)                              /* BSImagespaceShaderRadialBlurHigh */                                 \
+	X(ISHDRTonemapBlendCinematic, 55)                    /* BSImagespaceShaderHDRTonemapBlendCinematic */                       \
+	X(ISHDRTonemapBlendCinematicFade, 56)                /* BSImagespaceShaderHDRTonemapBlendCinematicFade */                   \
+	X(ISHDRDownSample16, 57)                             /* BSImagespaceShaderHDRDownSample16 */                                \
+	X(ISHDRDownSample4, 58)                              /* BSImagespaceShaderHDRDownSample4 */                                 \
+	X(ISHDRDownSample16Lum, 59)                          /* BSImagespaceShaderHDRDownSample16Lum */                             \
+	X(ISHDRDownSample4RGB2Lum, 60)                       /* BSImagespaceShaderHDRDownSample4RGB2Lum */                          \
+	X(ISHDRDownSample4LumClamp, 61)                      /* BSImagespaceShaderHDRDownSample4LumClamp */                         \
+	X(ISHDRDownSample4LightAdapt, 62)                    /* BSImagespaceShaderHDRDownSample4LightAdapt */                       \
+	X(ISHDRDownSample16LumClamp, 63)                     /* BSImagespaceShaderHDRDownSample16LumClamp */                        \
+	X(ISHDRDownSample16LightAdapt, 64)                   /* BSImagespaceShaderHDRDownSample16LightAdapt */                      \
+	X(ISBlur3, 65)                                       /* BSImagespaceShaderBlur3 */                                          \
+	X(ISBlur5, 66)                                       /* BSImagespaceShaderBlur5 */                                          \
+	X(ISBlur7, 67)                                       /* BSImagespaceShaderBlur7 */                                          \
+	X(ISBlur9, 68)                                       /* BSImagespaceShaderBlur9 */                                          \
+	X(ISBlur11, 69)                                      /* BSImagespaceShaderBlur11 */                                         \
+	X(ISBlur13, 70)                                      /* BSImagespaceShaderBlur13 */                                         \
+	X(ISBlur15, 71)                                      /* BSImagespaceShaderBlur15 */                                         \
+	X(ISNonHDRBlur3, 72)                                 /* BSImagespaceShaderNonHDRBlur3 */                                    \
+	X(ISNonHDRBlur5, 73)                                 /* BSImagespaceShaderNonHDRBlur5 */                                    \
+	X(ISNonHDRBlur7, 74)                                 /* BSImagespaceShaderNonHDRBlur7 */                                    \
+	X(ISNonHDRBlur9, 75)                                 /* BSImagespaceShaderNonHDRBlur9 */                                    \
+	X(ISNonHDRBlur11, 76)                                /* BSImagespaceShaderNonHDRBlur11 */                                   \
+	X(ISNonHDRBlur13, 77)                                /* BSImagespaceShaderNonHDRBlur13 */                                   \
+	X(ISNonHDRBlur15, 78)                                /* BSImagespaceShaderNonHDRBlur15 */                                   \
+	X(ISBrightPassBlur3, 79)                             /* BSImagespaceShaderBrightPassBlur3 */                                \
+	X(ISBrightPassBlur5, 80)                             /* BSImagespaceShaderBrightPassBlur5 */                                \
+	X(ISBrightPassBlur7, 81)                             /* BSImagespaceShaderBrightPassBlur7 */                                \
+	X(ISBrightPassBlur9, 82)                             /* BSImagespaceShaderBrightPassBlur9 */                                \
+	X(ISBrightPassBlur11, 83)                            /* BSImagespaceShaderBrightPassBlur11 */                               \
+	X(ISBrightPassBlur13, 84)                            /* BSImagespaceShaderBrightPassBlur13 */                               \
+	X(ISBrightPassBlur15, 85)                            /* BSImagespaceShaderBrightPassBlur15 */                               \
+	X(ISWaterDisplacementClearSimulation, 86)            /* BSImagespaceShaderWaterDisplacementClearSimulation */               \
+	X(ISWaterDisplacementTexOffset, 87)                  /* BSImagespaceShaderWaterDisplacementTexOffset */                     \
+	X(ISWaterDisplacementWadingRipple, 88)               /* BSImagespaceShaderWaterDisplacementWadingRipple */                  \
+	X(ISWaterDisplacementRainRipple, 89)                 /* BSImagespaceShaderWaterDisplacementRainRipple */                    \
+	X(ISWaterWadingHeightmap, 90)                        /* BSImagespaceShaderWaterWadingHeightmap */                           \
+	X(ISWaterRainHeightmap, 91)                          /* BSImagespaceShaderWaterRainHeightmap */                             \
+	X(ISWaterBlendHeightmaps, 92)                        /* BSImagespaceShaderWaterBlendHeightmaps */                           \
+	X(ISWaterSmoothHeightmap, 93)                        /* BSImagespaceShaderWaterSmoothHeightmap */                           \
+	X(ISWaterDisplacementNormals, 94)                    /* BSImagespaceShaderWaterDisplacementNormals */                       \
+	X(ISNoiseScrollAndBlend, 95)                         /* BSImagespaceShaderNoiseScrollAndBlend */                            \
+	X(ISNoiseNormalmap, 96)                              /* BSImagespaceShaderNoiseNormalmap */                                 \
+	X(ISVolumetricLighting, 97)                          /* BSImagespaceShaderVolumetricLighting */                             \
+	X2(ISLocalMap, 98, 101)                              /* BSImagespaceShaderLocalMap */                                       \
+	X2(ISAlphaBlend, 99, 102)                            /* BSImagespaceShaderAlphaBlend */                                     \
+	X2(ISLensFlare, 100, 103)                            /* BSImagespaceShaderLensFlare */                                      \
+	X2(ISLensFlareVisibility, 101, 104)                  /* BSImagespaceShaderLensFlareVisibility */                            \
+	X2(ISApplyReflections, 102, 105)                     /* BSImagespaceShaderApplyReflections */                               \
+	X2(ISApplyVolumetricLighting, 103, 106)              /* BSImagespaceShaderISApplyVolumetricLighting */                      \
+	X2(ISBasicCopy, 104, 107)                            /* BSImagespaceShaderISBasicCopy */                                    \
+	X2(ISBlur, 105, 108)                                 /* BSImagespaceShaderISBlur */                                         \
+	X2(ISVolumetricLightingBlurHCS, 106, 109)            /* BSImagespaceShaderISVolumetricLightingBlurHCS */                    \
+	X2(ISVolumetricLightingBlurVCS, 107, 110)            /* BSImagespaceShaderISVolumetricLightingBlurVCS */                    \
+	X2(ISReflectionBlurHCS, 108, 111)                    /* BSImagespaceShaderReflectionBlurHCS */                              \
+	X2(ISReflectionBlurVCS, 109, 112)                    /* BSImagespaceShaderReflectionBlurVCS */                              \
+	X2(ISParallaxMaskBlurHCS, 110, 113)                  /* BSImagespaceShaderISParallaxMaskBlurHCS */                          \
+	X2(ISParallaxMaskBlurVCS, 111, 114)                  /* BSImagespaceShaderISParallaxMaskBlurVCS */                          \
+	X2(ISDepthOfFieldBlurHCS, 112, 115)                  /* BSImagespaceShaderISDepthOfFieldBlurHCS */                          \
+	X2(ISDepthOfFieldBlurVCS, 113, 116)                  /* BSImagespaceShaderISDepthOfFieldBlurVCS */                          \
+	X2(ISCompositeVolumetricLighting, 114, 117)          /* BSImagespaceShaderISCompositeVolumetricLighting */                  \
+	X2(ISCompositeLensFlare, 115, 118)                   /* BSImagespaceShaderISCompositeLensFlare */                           \
+	X2(ISCompositeLensFlareVolumetricLighting, 116, 119) /* BSImagespaceShaderISCompositeLensFlareVolumetricLighting */         \
+	X2(ISCopySubRegionCS, 117, 120)                      /* BSImagespaceShaderISCopySubRegionCS */                              \
+	X2(ISDebugSnow, 118, 121)                            /* BSImagespaceShaderISDebugSnow */                                    \
+	X2(ISDownsample, 119, 122)                           /* BSImagespaceShaderISDownsample */                                   \
+	X2(ISDownsampleIgnoreBrightest, 120, 123)            /* BSImagespaceShaderISDownsampleIgnoreBrightest */                    \
+	X2(ISDownsampleCS, 121, 124)                         /* BSImagespaceShaderISDownsampleCS */                                 \
+	X2(ISDownsampleIgnoreBrightestCS, 122, 125)          /* BSImagespaceShaderISDownsampleIgnoreBrightestCS */                  \
+	X2(ISExp, 123, 128)                                  /* BSImagespaceShaderISExp */                                          \
+	X2(ISIBLensFlares, 124, 130)                         /* BSImagespaceShaderISIBLensFlares */                                 \
+	X2(ISLightingComposite, 125, 131)                    /* BSImagespaceShaderISLightingComposite */                            \
+	X2(ISLightingCompositeNoDirectionalLight, 126, 132)  /* BSImagespaceShaderISLightingCompositeNoDirectionalLight */          \
+	X2(ISLightingCompositeMenu, 127, 133)                /* BSImagespaceShaderISLightingCompositeMenu */                        \
+	X2(ISPerlinNoiseCS, 128, 134)                        /* BSImagespaceShaderISPerlinNoiseCS */                                \
+	X2(ISPerlinNoise2DCS, 129, 135)                      /* BSImagespaceShaderISPerlinNoise2DCS */                              \
+	X2(ISReflectionsRayTracing, 130, 145)                /* BSImagespaceShaderReflectionsRayTracing */                          \
+	X2(ISReflectionsDebugSpecMask, 131, 146)             /* BSImagespaceShaderReflectionsDebugSpecMask */                       \
+	X2(ISSAOBlurH, 132, 147)                             /* BSImagespaceShaderISSAOBlurH */                                     \
+	X2(ISSAOBlurV, 133, 148)                             /* BSImagespaceShaderISSAOBlurV */                                     \
+	X2(ISSAOBlurHCS, 134, 149)                           /* BSImagespaceShaderISSAOBlurHCS */                                   \
+	X2(ISSAOBlurVCS, 135, 150)                           /* BSImagespaceShaderISSAOBlurVCS */                                   \
+	X2(ISSAOCameraZ, 136, 151)                           /* BSImagespaceShaderISSAOCameraZ */                                   \
+	X2(ISSAOCameraZAndMipsCS, 137, 152)                  /* BSImagespaceShaderISSAOCameraZAndMipsCS */                          \
+	X2(ISSAOCompositeSAO, 138, 153)                      /* BSImagespaceShaderISSAOCompositeSAO */                              \
+	X2(ISSAOCompositeFog, 139, 154)                      /* BSImagespaceShaderISSAOCompositeFog */                              \
+	X2(ISSAOCompositeSAOFog, 140, 155)                   /* BSImagespaceShaderISSAOCompositeSAOFog */                           \
+	X2(ISMinify, 141, 156)                               /* BSImagespaceShaderISMinify */                                       \
+	X2(ISMinifyContrast, 142, 157)                       /* BSImagespaceShaderISMinifyContrast */                               \
+	X2(ISSAORawAO, 143, 158)                             /* BSImagespaceShaderISSAORawAO */                                     \
+	X2(ISSAORawAONoTemporal, 144, 159)                   /* BSImagespaceShaderISSAORawAONoTemporal */                           \
+	X2(ISSAORawAOCS, 145, 160)                           /* BSImagespaceShaderISSAORawAOCS */                                   \
+	X2(ISSILComposite, 146, 161)                         /* BSImagespaceShaderISSILComposite */                                 \
+	X2(ISSILRawInd, 147, 162)                            /* BSImagespaceShaderISSILRawInd */                                    \
+	X2(ISSimpleColor, 148, 163)                          /* BSImagespaceShaderISSimpleColor */                                  \
+	X2(ISDisplayDepth, 149, 164)                         /* BSImagespaceShaderISDisplayDepth */                                 \
+	X2(ISSnowSSS, 150, 165)                              /* BSImagespaceShaderISSnowSSS */                                      \
+	X2(ISTemporalAA, 151, 166)                           /* BSImagespaceShaderISTemporalAA */                                   \
+	X2(ISTemporalAA_UI, 152, 167)                        /* BSImagespaceShaderISTemporalAA_UI */                                \
+	X2(ISTemporalAA_Water, 153, 168)                     /* BSImagespaceShaderISTemporalAA_Water */                             \
+	X2(ISUpsampleDynamicResolution, 154, 169)            /* BSImagespaceShaderISUpsampleDynamicResolution */                    \
+	X2(ISWaterBlend, 155, 170)                           /* BSImagespaceShaderISWaterBlend */                                   \
+	X2(ISUnderwaterMask, 156, 171)                       /* BSImagespaceShaderISUnderwaterMask */                               \
+	X2(ISWaterFlow, 157, 172)                            /* BSImagespaceShaderWaterFlow */                                      \
+	/* SE 158 missing */                                                                                                        \
+	/* VR only */                                                                                                               \
+	X2(ISCopyDepthBuffer, INVALID_INDEX, 98)            /* BSImagespaceShaderCopyDepthBuffer */                                 \
+	X2(ISCopyDepthBuffer_DR, INVALID_INDEX, 99)         /* BSImagespaceShaderCopyDepthBuffer_DR */                              \
+	X2(ISCopyDepthBufferTargetSize, INVALID_INDEX, 100) /* BSImagespaceShaderCopyDepthBuffer_TargetSize */                      \
+	/* VR 111 = ISReflectionBlurHCS; ISGraphicsTextureFilterMode was a phantom (removed) */                                     \
+	X2(ISDownsampleHierarchicalDepthBufferCS, INVALID_INDEX, 126) /* BSImagespaceShaderISDownsampleHierarchicalDepthBufferCS */ \
+	X2(ISDiffScaleDownsampleDepthBufferCS, INVALID_INDEX, 127)    /* BSImagespaceShaderISDiffScaleDownsampleDepthBufferCS */    \
+	X2(ISFullScreenVR, INVALID_INDEX, 129)                        /* BSImagespaceShaderISFullScreenVR */                        \
+	X2(ISTransformLvl7PreTest, INVALID_INDEX, 136)                /* BSImagespaceShaderTransformLvl7PreTest */                  \
+	X2(ISLvl6PreTest, INVALID_INDEX, 137)                         /* BSImagespaceShaderLvl6PreTest */                           \
+	X2(ISLvl5PreTest, INVALID_INDEX, 138)                         /* BSImagespaceShaderLvl5PreTest */                           \
+	X2(ISLvl4PreTest, INVALID_INDEX, 139)                         /* BSImagespaceShaderLvl4PreTest */                           \
+	X2(ISLvl3PreTest, INVALID_INDEX, 140)                         /* BSImagespaceShaderLvl3PreTest */                           \
+	X2(ISLvl2PreTest, INVALID_INDEX, 141)                         /* BSImagespaceShaderLvl2PreTest */                           \
+	X2(ISLvl1PreTest, INVALID_INDEX, 142)                         /* BSImagespaceShaderLvl1PreTest */                           \
+	X2(ISLvl0PreTest, INVALID_INDEX, 143)                         /* BSImagespaceShaderLvl0PreTest */                           \
+	X2(ISSetupPreTest, INVALID_INDEX, 144)                        /* BSImagespaceShaderSetupPreTest */
 
-			Total = 159,
-			VRTotal = 173
+// IDs pack SE (low byte) + VR (high byte). Single-runtime builds resolve to the concrete
+// runtime index (so the enum value matches the binary, which the id discovery relies on);
+// SKYRIM_CROSS_VR keeps the packed form for GetCurrentIndex(). NOTE: in a single-runtime
+// build every effect absent from that runtime collapses to INVALID_INDEX, so name lookup
+// uses an if-chain rather than a switch (duplicate case labels are an error).
+#if defined(SKYRIM_CROSS_VR)
+#	define MakeImageSpaceID(se, vr) (se | (vr << 8))
+#elif defined(EXCLUSIVE_SKYRIM_VR)
+#	define MakeImageSpaceID(se, vr) (vr)
+#else
+#	define MakeImageSpaceID(se, vr) (se)
+#endif
+		static constexpr std::uint16_t INVALID_INDEX = 255;
+
+		static constexpr std::uint16_t TOTAL_SE_EFFECTS = 159;
+		static constexpr std::uint16_t TOTAL_VR_EFFECTS = 173;
+
+#define X(name, index) name = MakeImageSpaceID(index, index),
+#define X2(name, se, vr) name = MakeImageSpaceID(se, vr),
+		/**
+		 * @brief Enumeration of image space effect types.
+		 *
+		 * Defines identifiers for various image space shaders and effects used in Skyrim's
+		 * rendering pipeline. Values are packed to support both SE/AE and VR indices.
+		 * Use GetSEIndex() and GetVRIndex() to extract runtime-specific indices.
+		 */
+		enum ImageSpaceEffectEnum : std::int32_t
+		{
+			IMAGE_SPACE_EFFECTS
+				Total = TOTAL_SE_EFFECTS,
+			VRTotal = TOTAL_VR_EFFECTS
 		};
+#undef X
+#undef X2
+
+		/**
+		 * @brief Gets the Skyrim Special Edition index for an effect ID.
+		 * @return The SE index, or INVALID_INDEX in a VR-only build.
+		 */
+		[[nodiscard]] static constexpr std::uint16_t GetSEIndex([[maybe_unused]] ImageSpaceEffectEnum a_effect) noexcept
+		{
+#if defined(SKYRIM_CROSS_VR)
+			return static_cast<std::uint16_t>(a_effect & 0xFF);
+#elif defined(EXCLUSIVE_SKYRIM_VR)
+			return INVALID_INDEX;                         // SE index is not encoded in a VR-only build
+#else
+			return static_cast<std::uint16_t>(a_effect);  // id is already the SE/AE index
+#endif
+		}
+
+		/**
+		 * @brief Gets the Skyrim VR index for an effect ID.
+		 * @return The VR index, or INVALID_INDEX in a non-VR build.
+		 */
+		[[nodiscard]] static constexpr std::uint16_t GetVRIndex([[maybe_unused]] ImageSpaceEffectEnum a_effect) noexcept
+		{
+#if defined(SKYRIM_CROSS_VR)
+			return static_cast<std::uint16_t>((a_effect >> 8) & 0xFF);
+#elif defined(EXCLUSIVE_SKYRIM_VR)
+			return static_cast<std::uint16_t>(a_effect);  // id is already the VR index
+#else
+			return INVALID_INDEX;                         // VR index is not encoded in a non-VR build
+#endif
+		}
+
+		/**
+		 * @brief Gets the index for the current runtime (SE/AE or VR).
+		 * @param a_effect The packed effect enum value.
+		 * @return The runtime-specific index.
+		 */
+		[[nodiscard]] static std::uint16_t GetCurrentIndex(ImageSpaceEffectEnum a_effect) noexcept
+		{
+			return REL::Module::IsVR() ? GetVRIndex(a_effect) : GetSEIndex(a_effect);
+		}
+
+		/**
+		 * @brief Gets the total number of effects for the current runtime.
+		 * @return Total count of effects (159 for SE/AE, 173 for VR).
+		 */
+		[[nodiscard]] static std::uint16_t GetTotal() noexcept
+		{
+			return REL::Module::IsVR() ? TOTAL_VR_EFFECTS : TOTAL_SE_EFFECTS;
+		}
+
+		/**
+		 * @brief Gets the string name of an image space effect.
+		 * @param a_effect The effect enum value.
+		 * @return String representation of the effect name.
+		 */
+		[[nodiscard]] static std::string GetImageSpaceEffectName(ImageSpaceEffectEnum a_effect)
+		{
+#define X(name, index)      \
+	if (a_effect == (name)) \
+		return #name;
+#define X2(name, se, vr)    \
+	if (a_effect == (name)) \
+		return #name;
+			// if-chain (not switch): single-runtime builds collapse every cross-runtime
+			// effect to INVALID_INDEX; duplicate switch cases are an error, duplicate
+			// if-conditions are not. Present effects have unique values (first match wins).
+			IMAGE_SPACE_EFFECTS
+			return "Unknown";
+#undef X
+#undef X2
+		}
 
 		struct UNK_BSImagespaceShaderISTemporalAA
 		{
@@ -185,6 +311,31 @@ namespace RE
 			BSImagespaceShader*             BSImagespaceShaderISTemporalAA_Water;  // 10
 			bool                            taaEnabled;                            // 18
 		};
+
+		// Real type of the field misnamed BSImagespaceShaderISSAOBlurH below (all three
+		// runtimes; the feeding allocation is 0x70 bytes, not sizeof(BSImagespaceShader)
+		// == 0x1A8). Holds pointers to the rest of the SAO effect chain plus SAO/DOF
+		// Display-menu ini defaults, incl. bSAOEnable:Display into enableSAO.
+		struct SAOEffectParams
+		{
+			ImageSpaceEffect* blurH;            // 00 - ISSAOBlurH (self)
+			ImageSpaceEffect* blurV;            // 08 - ISSAOBlurV
+			ImageSpaceEffect* cameraZ;          // 10 - ISSAOCameraZ
+			ImageSpaceEffect* compositeSAO;     // 18 - ISSAOCompositeSAO
+			ImageSpaceEffect* compositeFog;     // 20 - ISSAOCompositeFog
+			ImageSpaceEffect* compositeSAOFog;  // 28 - ISSAOCompositeSAOFog
+			ImageSpaceEffect* minify;           // 30 - ISMinify
+			ImageSpaceEffect* minifyContrast;   // 38 - ISMinifyContrast
+			ImageSpaceEffect* rawAO;            // 40 - ISSAORawAO
+			ImageSpaceEffect* rawAONoTemporal;  // 48 - ISSAORawAONoTemporal
+			bool              enableSAO;        // 50 - from bSAOEnable:Display (low byte of an 8-byte slot)
+			std::uint8_t      pad51[3];         // 51
+			std::uint32_t     unk54;            // 54 - always 0 at construction
+			std::uint64_t     unk58;            // 58 - always 0 at construction
+			std::uint64_t     unk60;            // 60 - always 0 at construction
+			std::uint64_t     unk68;            // 68 - always 0 at construction
+		};
+		static_assert(sizeof(SAOEffectParams) == 0x70);
 
 		struct RUNTIME_DATA
 		{
@@ -217,7 +368,7 @@ namespace RE
 	NiPointer<BSImagespaceShader>       BSImagespaceShaderISLightingComposite;           /* 1B0, VR 1D0 */                                                                                       \
 	NiPointer<BSImagespaceShader>       BSImagespaceShaderISPerlinNoiseCS;               /* 1B8, VR 1D8 */                                                                                       \
 	NiPointer<BSImagespaceShader>       BSImagespaceShaderReflectionsRayTracing;         /* 1C0, VR 1E8 */                                                                                       \
-	NiPointer<BSImagespaceShader>       BSImagespaceShaderISSAOBlurH;                    /* 1C8, VR 1F0 */                                                                                       \
+	SAOEffectParams*                    BSImagespaceShaderISSAOBlurH;                    /* 1C8, VR 1F0 -- see SAOEffectParams doc comment */                                                    \
 	NiPointer<BSImagespaceShader>       BSImagespaceShaderISSAOBlurHCS;                  /* 1D0, VR 1F8 */                                                                                       \
 	NiPointer<BSImagespaceShader>       BSImagespaceShaderISSILComposite;                /* 1D8, VR 200 */                                                                                       \
 	NiPointer<BSImagespaceShader>       BSImagespaceShaderISSimpleColor;                 /* 1E0, VR 208 */                                                                                       \
@@ -228,7 +379,7 @@ namespace RE
 	NiPointer<BSImagespaceShader>       BSImagespaceShaderISUnderwaterMask;              /* 208, VR 230 */                                                                                       \
 	bool                                usesLDR;                                         /* 210, VR 238 */                                                                                       \
 	bool                                unk211;                                          /* 211, VR 239 */                                                                                       \
-	std::uint64_t                       unk218;                                          /* 218, VR 240 */
+	NiPointer<NiAVObject>               underwaterSplitterGeom;                          /* 218, VR 240 */
             RUNTIME_DATA_CONTENT
 		};
 		static_assert(sizeof(RUNTIME_DATA) == 0x1C8);
@@ -269,7 +420,7 @@ namespace RE
 	NiPointer<BSImagespaceShader>       BSImagespaceShaderISPerlinNoiseCS;                       /* 1B8, VR 1D8 */                                                                                       \
 	NiPointer<BSImagespaceShader>       BSImagespaceShaderTransformLvl7PreTest;                  /* VR 1E0 */                                                                                            \
 	NiPointer<BSImagespaceShader>       BSImagespaceShaderReflectionsRayTracing;                 /* 1C0, VR 1E8 */                                                                                       \
-	NiPointer<BSImagespaceShader>       BSImagespaceShaderISSAOBlurH;                            /* 1C8, VR 1F0 */                                                                                       \
+	SAOEffectParams*                    BSImagespaceShaderISSAOBlurH;                            /* 1C8, VR 1F0 -- see SAOEffectParams doc comment above */                                              \
 	NiPointer<BSImagespaceShader>       BSImagespaceShaderISSAOBlurHCS;                          /* 1D0, VR 1F8 */                                                                                       \
 	NiPointer<BSImagespaceShader>       BSImagespaceShaderISSILComposite;                        /* 1D8, VR 200 */                                                                                       \
 	NiPointer<BSImagespaceShader>       BSImagespaceShaderISSimpleColor;                         /* 1E0, VR 208 */                                                                                       \
@@ -280,7 +431,7 @@ namespace RE
 	NiPointer<BSImagespaceShader>       BSImagespaceShaderISUnderwaterMask;                      /* 208, VR 230 */                                                                                       \
 	bool                                usesLDR;                                                 /* 210, VR 238 */                                                                                       \
 	bool                                unk211;                                                  /* 211, VR 239 */                                                                                       \
-	std::uint64_t                       unk218;                                                  /* 218, VR 240 */
+	NiPointer<NiAVObject>               underwaterSplitterGeom;                                  /* 218, VR 240 */
             VR_RUNTIME_DATA_CONTENT
 		};
 		static_assert(sizeof(VR_RUNTIME_DATA) == 0x1F0);
@@ -290,32 +441,86 @@ namespace RE
 			return *singleton;
 		}
 
-		[[nodiscard]] inline RUNTIME_DATA& GetRuntimeData() noexcept
+		RUNTIME_DATA_ACCESSOR(RUNTIME_DATA, 0x58, 0);
+
+		VR_ONLY_POINTER_ACCESSOR(VR_RUNTIME_DATA, GetVRRuntimeData, 0x58);
+
+		// Prefer these over GetRuntimeData()/GetVRRuntimeData() directly --
+		// always resolves the right struct regardless of layout differences.
+		RUNTIME_DATA_FIELD_ACCESSOR(ImageSpaceData, GetImageSpaceData, GetRuntimeData, GetVRRuntimeData, data);
+		RUNTIME_DATA_FIELD_ACCESSOR(ImageSpaceBaseData*, GetCurrentBaseData, GetRuntimeData, GetVRRuntimeData, currentBaseData);
+		RUNTIME_DATA_FIELD_ACCESSOR(ImageSpaceBaseData*, GetOverrideBaseData, GetRuntimeData, GetVRRuntimeData, overrideBaseData);
+
+		/**
+		 * @brief Gets all effects supported by the current runtime, sorted by index.
+		 * @return Vector of effect enums available in the current runtime.
+		 */
+		[[nodiscard]] static std::vector<ImageSpaceEffectEnum> GetAllEffects()
 		{
-			return REL::RelocateMember<RUNTIME_DATA>(this, 0x58, 0);
+			static std::vector<ImageSpaceEffectEnum> allEffects;
+			if (allEffects.empty()) {
+#define X(name, index) allEffects.push_back(name);
+#define X2(name, se, vr) allEffects.push_back(name);
+				IMAGE_SPACE_EFFECTS
+#undef X
+#undef X2
+			}
+			std::vector<ImageSpaceEffectEnum> filtered;
+			for (auto e : allEffects) {
+				if (SupportsCurrentRuntime(e)) {
+					filtered.push_back(e);
+				}
+			}
+			std::ranges::sort(filtered, [](ImageSpaceEffectEnum a, ImageSpaceEffectEnum b) {
+				return GetCurrentIndex(a) < GetCurrentIndex(b);
+			});
+			return filtered;
 		}
 
-		[[nodiscard]] inline const RUNTIME_DATA& GetRuntimeData() const noexcept
+		/**
+		 * @brief Checks if an effect is supported in Skyrim Special Edition.
+		 * @param a_effect The effect to check.
+		 * @return True if the effect has a valid SE index.
+		 */
+		[[nodiscard]] static constexpr bool SupportsSE(ImageSpaceEffectEnum a_effect) noexcept
 		{
-			return REL::RelocateMember<RUNTIME_DATA>(this, 0x58, 0);
+			return GetSEIndex(a_effect) != INVALID_INDEX;
 		}
 
-		[[nodiscard]] inline VR_RUNTIME_DATA& GetVRRuntimeData() noexcept
+		/**
+		 * @brief Checks if an effect is supported in Skyrim VR.
+		 * @param a_effect The effect to check.
+		 * @return True if the effect has a valid VR index.
+		 */
+		[[nodiscard]] static constexpr bool SupportsVR(ImageSpaceEffectEnum a_effect) noexcept
 		{
-			return REL::RelocateMember<VR_RUNTIME_DATA>(this, 0, 0x58);
+			return GetVRIndex(a_effect) != INVALID_INDEX;
 		}
 
-		[[nodiscard]] inline const VR_RUNTIME_DATA& GetVRRuntimeData() const noexcept
+		/**
+		 * @brief Checks if an effect is supported in Skyrim Anniversary Edition.
+		 * @param a_effect The effect to check.
+		 * @return True if the effect is supported (same as SE).
+		 */
+		[[nodiscard]] static constexpr bool SupportsAE(ImageSpaceEffectEnum a_effect) noexcept
 		{
-			return REL::RelocateMember<VR_RUNTIME_DATA>(this, 0, 0x58);
+			return SupportsSE(a_effect);  // AE uses same indices as SE
+		}
+
+		/**
+		 * @brief Checks if an effect is supported in the current runtime.
+		 * @param a_effect The effect to check.
+		 * @return True if the effect is supported in the current runtime.
+		 */
+		[[nodiscard]] static constexpr bool SupportsCurrentRuntime(ImageSpaceEffectEnum a_effect) noexcept
+		{
+			return REL::Module::IsVR() ? SupportsVR(a_effect) : SupportsSE(a_effect);
 		}
 
 		// members
 		std::uint64_t                        unk00;       /* 000 */
 		std::uint64_t                        unk08;       /* 008 */
-		std::int32_t                         unk10;       /* 010 */
-		std::int32_t                         unk14;       /* 014 */
-		std::uint64_t                        unk18;       /* 018 */
+		NiRect<std::int32_t>                 rect;        // 010
 		NiTPrimitiveArray<ImageSpaceEffect*> effects;     /* 020 */
 		bool                                 initEffects; /* 038 */
 		std::uint32_t                        unk3C;       /* 03C */
@@ -327,17 +532,8 @@ namespace RE
 #elif defined(EXCLUSIVE_SKYRIM_VR)
 		VR_RUNTIME_DATA_CONTENT
 #endif
-	private:
-		KEEP_FOR_RE()
 	};
-#if defined(EXCLUSIVE_SKYRIM_FLAT)
-	static_assert(sizeof(ImageSpaceManager) == 0x220);
-#elif defined(EXCLUSIVE_SKYRIM_VR)
-	static_assert(sizeof(ImageSpaceManager) == 0x248);
-#else
-	static_assert(sizeof(ImageSpaceManager) == 0x58);
-
-#endif
+	STATIC_ASSERT_SIZE(ImageSpaceManager, 0x220, 0x220, 0x248, 0x58);
 }
 #undef RUNTIME_DATA_CONTENT
 #undef VR_RUNTIME_DATA_CONTENT

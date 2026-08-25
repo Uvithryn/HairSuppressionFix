@@ -4,12 +4,15 @@
 #include "RE/N/NiCamera.h"
 #include "RE/N/NiSmartPointer.h"
 #include "RE/N/NiSourceTexture.h"
+#include "REL/RuntimeDataAccessors.h"
 #include "SKSE/Version.h"
 #include <SimpleMath.h>
 using namespace DirectX::SimpleMath;
 
 namespace RE
 {
+	class NiCamera;
+
 	namespace BSGraphics
 	{
 		//WARNING: Structs containing ViewData appear to break when returned via RelocateMember due to incorrect offsets.
@@ -45,15 +48,19 @@ namespace RE
 		static_assert(offsetof(ViewData, viewPort) == 0x230);
 		static_assert(offsetof(ViewData, viewDepthRange) == 0x240);
 
+		// NOTE: alignas(16) on ViewData causes padding when embedded in structs.
+		// This affects FLATRIM builds where ViewData is embedded directly.
+#pragma warning(push)
+#pragma warning(disable: 4324)  // structure was padded due to alignment specifier
 		struct CAMERASTATE_RUNTIME_DATA
 		{
 #if !defined(ENABLE_SKYRIM_VR)  // Non-VR
-#	define CAMERASTATE_RUNTIME_DATA_CONTENT                                                                       \
-		ViewData camViewData;               /* 08 VR is BSTArray, Each array has 2 elements (one for each eye?) */ \
-		NiPoint3 posAdjust;                 /* 20 */                                                               \
-		NiPoint3 currentPosAdjust;          /* 38 */                                                               \
-		NiPoint3 previousPosAdjust;         /* 50 */                                                               \
-		#elif defined(EXCLUSIVE_SKYRIM_VR)  // VR
+#	define CAMERASTATE_RUNTIME_DATA_CONTENT                                                               \
+		ViewData camViewData;       /* 08 VR is BSTArray, Each array has 2 elements (one for each eye?) */ \
+		NiPoint3 posAdjust;         /* 20 */                                                               \
+		NiPoint3 currentPosAdjust;  /* 38 */                                                               \
+		NiPoint3 previousPosAdjust; /* 50 */
+#elif defined(EXCLUSIVE_SKYRIM_VR)  // VR
 #	define CAMERASTATE_RUNTIME_DATA_CONTENT                                                                         \
 		BSTArray<ViewData> camViewData;       /* 08 VR is BSTArray, Each array has 2 elements (one for each eye?) */ \
 		BSTArray<NiPoint3> posAdjust;         /* 20 */                                                               \
@@ -85,13 +92,15 @@ namespace RE
 			NiCamera* referenceCamera;         /* 00 */
 			CAMERASTATE_RUNTIME_DATA_CONTENT;  // 08
 		};
-#if !defined(ENABLE_SKYRIM_VR)  // Non-VR
+#pragma warning(pop)
+#if defined(EXCLUSIVE_SKYRIM_SE) || defined(EXCLUSIVE_SKYRIM_AE)  // SE/AE only
+		static_assert(sizeof(CameraStateData) == 0x290);
+#elif defined(EXCLUSIVE_SKYRIM_VR)  // VR only
 		static_assert(sizeof(CameraStateData) == 0x68);
-#elif defined(EXCLUSIVE_SKYRIM_VR)  // VR
-		static_assert(sizeof(CameraStateData) == 0x8);
-#else
+#elif defined(SKYRIM_CROSS_VR)      // Multi-runtime (ALL)
 		static_assert(sizeof(CameraStateData) == 0x8);
 #endif
+		// FLATRIM: Size check skipped - alignas(16) padding causes indeterminate size
 		class State
 		{
 		public:
@@ -99,7 +108,7 @@ namespace RE
 			{
 #if defined(EXCLUSIVE_SKYRIM_VR)  // VR
 #	define RUNTIME_DATA_CONTENT                                                                                               \
-		uint32_t                   firstCameraStateIndex;                /*	058 VR   only ?*/                                  \
+		uint32_t                   eyeIndex;                             /* 058 -- current render eye (0 = left, 1 = right) */ \
 		NiPointer<NiSourceTexture> defaultTextureBlack;                  /* SE 058, AE,VR 060 - "BSShader_DefHeightMap"*/      \
 		NiPointer<NiSourceTexture> defaultTextureWhite;                  /* SE 060, AE,VR 068 */                               \
 		NiPointer<NiSourceTexture> defaultTextureGrey;                   /* SE 068, AE,VR 070 */                               \
@@ -171,25 +180,24 @@ namespace RE
 				return nullptr;
 			}
 
-			[[nodiscard]] RUNTIME_DATA& GetRuntimeData() noexcept
+#if defined(EXCLUSIVE_SKYRIM_VR)
+			// The exclusive-VR RUNTIME_DATA includes firstCameraStateIndex at State + 0x58.
+			// Cross-runtime RUNTIME_DATA omits that field and therefore begins at State + 0x60.
+			static constexpr std::size_t RUNTIME_DATA_VR_OFFSET = 0x58;
+#else
+			static constexpr std::size_t RUNTIME_DATA_VR_OFFSET = 0x60;
+#endif
+			[[nodiscard]] static std::size_t RUNTIME_DATA_AE_OFFSET() noexcept
 			{
-				if SKYRIM_REL_CONSTEXPR (REL::Module::IsAE()) {
-					if (REL::Module::get().version().compare(SKSE::RUNTIME_SSE_1_6_629) != std::strong_ordering::less) {
-						return REL::RelocateMember<RUNTIME_DATA>(this, 0x60);
-					}
-				}
-				return REL::RelocateMember<RUNTIME_DATA>(this, 0x58, 0x60);
+				static const std::size_t offset = REL::Module::IsAtLeast(SKSE::RUNTIME_SSE_1_7_99) ? 0x70 : 0x60;
+				return offset;
 			}
+			RUNTIME_MEMBER_ACCESSOR_VERSIONED(RUNTIME_DATA, GetRuntimeData, SKSE::RUNTIME_SSE_1_6_629, 0x58, RUNTIME_DATA_VR_OFFSET, RUNTIME_DATA_AE_OFFSET());
 
-			[[nodiscard]] inline const RUNTIME_DATA& GetRuntimeData() const noexcept
-			{
-				if SKYRIM_REL_CONSTEXPR (REL::Module::IsAE()) {
-					if (REL::Module::get().version().compare(SKSE::RUNTIME_SSE_1_6_629) != std::strong_ordering::less) {
-						return REL::RelocateMember<RUNTIME_DATA>(this, 0x60);
-					}
-				}
-				return REL::RelocateMember<RUNTIME_DATA>(this, 0x58, 0x60);
-			}
+#if defined(ENABLE_SKYRIM_VR)
+			static_assert(RUNTIME_DATA_VR_OFFSET + offsetof(RUNTIME_DATA, dynamicResolutionWidthRatio) == 0x104);
+			static_assert(RUNTIME_DATA_VR_OFFSET + offsetof(RUNTIME_DATA, dynamicResolutionLock) == 0x118);
+#endif
 
 			[[nodiscard]] inline bool GetDoubleDynamicResolutionAdjustmentFrequency() noexcept
 			{
@@ -198,6 +206,14 @@ namespace RE
 				}
 				return false;
 			}
+
+			void SetCameraData(const NiCamera* a_camera, std::uint32_t a_flags)
+			{
+				using func_t = decltype(&State::SetCameraData);
+				static REL::Relocation<func_t> func{ RELOCATION_ID(75694, 77503) };
+				return func(this, a_camera, a_flags);
+			}
+
 			// members
 			NiPointer<NiSourceTexture> defaultTextureProjNoiseMap;         // 000
 			NiPointer<NiSourceTexture> defaultTextureProjDiffuseMap;       // 008
@@ -214,12 +230,12 @@ namespace RE
 			float                      projectionPosScaleX;                // 044
 			float                      projectionPosScaleY;                // 048
 			std::uint32_t              frameCount;                         // 04C
-			bool                       insideFrame;                        // 050
+			bool                       unk50;                              // 050 - previously misnamed insideFrame
 			bool                       letterbox;                          // 051
 			bool                       unk052;                             // 052
 			bool                       compiledShaderThisFrame;            // 053
-			bool                       useEarlyZ;                          // 054
-			bool                       unk055;                             // 055
+			bool                       insideFrame;                        // 054
+			bool                       useEarlyZ;                          // 055
 #ifndef ENABLE_SKYRIM_AE
 			RUNTIME_DATA_CONTENT;  // 058, AE,VR 060
 #endif
@@ -229,7 +245,7 @@ namespace RE
 		static_assert(offsetof(State, screenWidth) == 0x24);
 		static_assert(offsetof(State, frameBufferViewport) == 0x2C);
 		static_assert(offsetof(State, letterbox) == 0x51);
-		static_assert(offsetof(State, useEarlyZ) == 0x54);
+		static_assert(offsetof(State, insideFrame) == 0x54);
 		static_assert(offsetof(State, defaultTextureBlack) == 0x58);
 		static_assert(offsetof(State, defaultTextureWhite) == 0x60);
 		static_assert(offsetof(State, cameraDataCacheA) == 0xa0);
@@ -239,7 +255,7 @@ namespace RE
 		static_assert(offsetof(State, screenWidth) == 0x24);
 		static_assert(offsetof(State, frameBufferViewport) == 0x2C);
 		static_assert(offsetof(State, letterbox) == 0x51);
-		static_assert(offsetof(State, useEarlyZ) == 0x54);
+		static_assert(offsetof(State, insideFrame) == 0x54);
 		static_assert(offsetof(State, defaultTextureBlack) == 0x60);
 		static_assert(offsetof(State, defaultTextureWhite) == 0x68);
 		static_assert(offsetof(State, cameraDataCacheA) == 0xa8);
@@ -249,7 +265,7 @@ namespace RE
 		static_assert(offsetof(State, screenWidth) == 0x24);
 		static_assert(offsetof(State, frameBufferViewport) == 0x2C);
 		static_assert(offsetof(State, letterbox) == 0x51);
-		static_assert(offsetof(State, useEarlyZ) == 0x54);
+		static_assert(offsetof(State, insideFrame) == 0x54);
 #endif
 	}
 }

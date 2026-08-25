@@ -1,8 +1,8 @@
 set_xmakever('3.0.1')
-includes('lib/commonlibsse-ng')
+includes('lib/CommonLibSSE-NG')
 
 set_project('HairSuppressionFix')
-set_version('1.2.2')
+set_version('1.3.0')
 set_license('GPL-3.0')
 
 set_languages('c++23')
@@ -12,45 +12,42 @@ set_toolset('msvc', 'ninja')
 
 add_rules('mode.debug', 'mode.releasedbg', 'mode.release')
 
+-- These options are kept so the ClibDT GUI's --skyrim_se=y / --skyrim_ae=y /
+-- --skyrim_vr=y command-line flags remain valid. Unlike the stock template,
+-- all three now default to TRUE, matching CommonLibSSE-NG's own defaults.
+-- That produces a single DLL covering SE 1.5.97, AE 1.6.x/1.7.x, and VR.
+--
+-- CommonLibSSE-NG defines ENABLE_SKYRIM_SE / _AE / _VR itself from its own
+-- identically-named options, so this project does not add those defines.
+--
+-- Because all three defines are active at once, runtime selection happens at
+-- RUNTIME via REL::Module::IsVR() and version checks. See Hooks/Biped.cpp.
+
 option('skyrim_se')
-    set_default(false)
+    set_default(true)
     set_showmenu(true)
-    set_description('Build for Skyrim Special Edition')
+    set_description('Enable runtime support for Skyrim Special Edition')
 option_end()
 
 option('skyrim_ae')
-    set_default(false)
+    set_default(true)
     set_showmenu(true)
-    set_description('Build for Skyrim Anniversary Edition')
+    set_description('Enable runtime support for Skyrim Anniversary Edition')
 option_end()
 
 option('skyrim_vr')
-    set_default(false)
+    set_default(true)
     set_showmenu(true)
-    set_description('Build for Skyrim VR only')
+    set_description('Enable runtime support for Skyrim VR')
 option_end()
-
-if has_config('skyrim_vr') and (has_config('skyrim_se') or has_config('skyrim_ae')) then
-    raise('Cannot combine Skyrim VR with SE/AE builds. Enable only one configuration.')
-end
 
 target('HairSuppressionFix')
     add_deps('commonlibsse-ng')
 
-    local runtime = 'se_ae'
-    if has_config('skyrim_vr') then
-        runtime = 'vr'
-    elseif has_config('skyrim_ae') and not has_config('skyrim_se') then
-        runtime = 'ae'
-    elseif has_config('skyrim_se') and not has_config('skyrim_ae') then
-        runtime = 'se'
-    end
-
     add_rules('commonlibsse-ng.plugin', {
         name        = 'HairSuppressionFix',
         author      = 'Uvithryn',
-        description = 'Suppresses character hair properly. This version includes Beard Mask Fix.',
-        runtime     = runtime
+        description = 'Suppresses character hair properly. This version includes Beard Mask Fix.'
     })
 
     add_files('src/**.cpp')
@@ -66,14 +63,3 @@ target('HairSuppressionFix')
     )
 
     set_pcxxheader('src/pch.h')
-
-    if has_config('skyrim_vr') then
-        add_defines('ENABLE_SKYRIM_VR')
-    elseif has_config('skyrim_se') and not has_config('skyrim_ae') then
-        add_defines('ENABLE_SKYRIM_SE')
-    elseif has_config('skyrim_ae') and not has_config('skyrim_se') then
-        add_defines('ENABLE_SKYRIM_AE')
-    else
-        add_defines('ENABLE_SKYRIM_SE')
-        add_defines('ENABLE_SKYRIM_AE')
-    end

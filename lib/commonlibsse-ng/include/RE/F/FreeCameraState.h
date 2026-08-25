@@ -27,8 +27,10 @@ namespace RE
 		void GetTranslation(NiPoint3& a_translation) override;               // 05
 
 		// override (PlayerInputHandler)
-		bool CanProcess(InputEvent* a_event) override;                                          // 01
+		bool CanProcess(InputEvent* a_event) override;  // 01
+#ifdef EXCLUSIVE_SKYRIM_VR
 		void ProcessButton(ButtonEvent* a_event, PlayerControlsData* a_movementData) override;  // 04
+#endif
 
 		// members
 		NiPoint3         translation;        // 30
@@ -37,8 +39,6 @@ namespace RE
 		std::int16_t     verticalDirection;  // 4C
 		bool             useRunSpeed;        // 4E
 		bool             lockToZPlane;       // 4F
-	private:
-		KEEP_FOR_RE()
 	};
 #if defined(EXCLUSIVE_SKYRIM_FLAT)
 #	if defined(ENABLE_SKYRIM_AE) || defined(ENABLE_SKYRIM_SE)

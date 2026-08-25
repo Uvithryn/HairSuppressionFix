@@ -40,8 +40,6 @@ namespace RE
 
 		// members
 		bhkSerializable* serializable;  // 18
-	private:
-		KEEP_FOR_RE()
 	};
 	static_assert(sizeof(bhkSerializable) == 0x20);
 }

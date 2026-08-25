@@ -1,0 +1,72 @@
+{
+    directxtk = {
+        libfiles = [[C:\Users\Murphy\AppData\Local\.xmake\packages\d\directxtk\24.2.0\f6fb9eaf439246fdb823f48a8816ec0c\lib\DirectXTK.lib]],
+        linkdirs = [[C:\Users\Murphy\AppData\Local\.xmake\packages\d\directxtk\24.2.0\f6fb9eaf439246fdb823f48a8816ec0c\lib]],
+        static = true,
+        envs = {
+            PATH = {
+                [[C:\Users\Murphy\AppData\Local\.xmake\packages\d\directxtk\24.2.0\f6fb9eaf439246fdb823f48a8816ec0c\bin]],
+                [[C:\Users\Murphy\AppData\Local\.xmake\packages\n\ninja\1.12.1\10253c39aca14760ae4382272800b680\bin]],
+                [[C:\Users\Murphy\AppData\Local\.xmake\packages\c\cmake\3.31.6-msvc6\10253c39aca14760ae4382272800b680\bin]]
+            }
+        },
+        __enabled = true,
+        installdir = [[C:\Users\Murphy\AppData\Local\.xmake\packages\d\directxtk\24.2.0\f6fb9eaf439246fdb823f48a8816ec0c]],
+        version = "24.2.0",
+        links = "DirectXTK",
+        __requirestr = "directxtk 24.2.0",
+        sysincludedirs = [[C:\Users\Murphy\AppData\Local\.xmake\packages\d\directxtk\24.2.0\f6fb9eaf439246fdb823f48a8816ec0c\include]]
+    },
+    directxmath = {
+        envs = {
+            PATH = {
+                [[C:\Users\Murphy\AppData\Local\.xmake\packages\n\ninja\1.12.1\10253c39aca14760ae4382272800b680\bin]],
+                [[C:\Users\Murphy\AppData\Local\.xmake\packages\c\cmake\3.31.6-msvc6\10253c39aca14760ae4382272800b680\bin]]
+            }
+        },
+        __enabled = true,
+        installdir = [[C:\Users\Murphy\AppData\Local\.xmake\packages\d\directxmath\2024.02\b43cee1705a040bdb171c586b0ad9685]],
+        version = "2024.02",
+        license = "MIT",
+        __requirestr = "directxmath 2024.02",
+        sysincludedirs = [[C:\Users\Murphy\AppData\Local\.xmake\packages\d\directxmath\2024.02\b43cee1705a040bdb171c586b0ad9685\include\directxmath]]
+    },
+    rapidcsv = {
+        __enabled = true,
+        installdir = [[C:\Users\Murphy\AppData\Local\.xmake\packages\r\rapidcsv\v8.92\3ea9c5686c084d99b7090d143af1b725]],
+        version = "v8.92",
+        license = "BSD-3-Clause",
+        __requirestr = "rapidcsv v8.92",
+        sysincludedirs = [[C:\Users\Murphy\AppData\Local\.xmake\packages\r\rapidcsv\v8.92\3ea9c5686c084d99b7090d143af1b725\include]]
+    },
+    spdlog = {
+        defines = {
+            "SPDLOG_COMPILED_LIB",
+            "SPDLOG_USE_STD_FORMAT",
+            "SPDLOG_WCHAR_TO_UTF8_SUPPORT"
+        },
+        linkdirs = [[C:\Users\Murphy\AppData\Local\.xmake\packages\s\spdlog\v1.16.0\1053dccb2da94316b3bef3cb1db15374\lib]],
+        __requireconfs = {
+            configs = {
+                std_format = true,
+                header_only = false,
+                wchar = true
+            }
+        },
+        license = "MIT",
+        __enabled = true,
+        static = true,
+        links = "spdlog",
+        version = "v1.16.0",
+        installdir = [[C:\Users\Murphy\AppData\Local\.xmake\packages\s\spdlog\v1.16.0\1053dccb2da94316b3bef3cb1db15374]],
+        envs = {
+            PATH = {
+                [[C:\Users\Murphy\AppData\Local\.xmake\packages\n\ninja\1.12.1\10253c39aca14760ae4382272800b680\bin]],
+                [[C:\Users\Murphy\AppData\Local\.xmake\packages\c\cmake\3.31.6-msvc6\10253c39aca14760ae4382272800b680\bin]]
+            }
+        },
+        libfiles = [[C:\Users\Murphy\AppData\Local\.xmake\packages\s\spdlog\v1.16.0\1053dccb2da94316b3bef3cb1db15374\lib\spdlog.lib]],
+        __requirestr = "spdlog v1.16.0",
+        sysincludedirs = [[C:\Users\Murphy\AppData\Local\.xmake\packages\s\spdlog\v1.16.0\1053dccb2da94316b3bef3cb1db15374\include]]
+    }
+}

@@ -1,5 +1,7 @@
 #include "RE/M/MenuEventHandler.h"
 
+// Other builds define these as non-virtual RelocateVirtual wrappers in the header.
+#ifdef EXCLUSIVE_SKYRIM_VR
 namespace RE
 {
 	bool MenuEventHandler::ProcessKinect(KinectEvent*)
@@ -22,3 +24,4 @@ namespace RE
 		return false;
 	}
 }
+#endif

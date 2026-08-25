@@ -51,8 +51,6 @@ namespace RE
 		void*                      skinToWorldWorldToSkinMatrix;  // 58
 #if defined(EXCLUSIVE_SKYRIM_FLAT)
 		REX::W32::CRITICAL_SECTION lock;  // 60
-	private:
-		KEEP_FOR_RE()
 	};
 	static_assert(sizeof(NiSkinInstance) == 0x88);
 #else

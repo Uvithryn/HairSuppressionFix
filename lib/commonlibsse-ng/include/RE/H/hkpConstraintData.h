@@ -78,8 +78,6 @@ namespace RE
 
 		// members
 		uint64_t userData;  // 10
-	private:
-		KEEP_FOR_RE()
 	};
 	static_assert(sizeof(hkpConstraintData) == 0x18);
 }

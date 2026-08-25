@@ -30,12 +30,21 @@ namespace RE
 
 		constexpr BSTArrayBase() noexcept = default;
 		constexpr BSTArrayBase(const BSTArrayBase&) noexcept = default;
-		constexpr BSTArrayBase(BSTArrayBase&&) noexcept = default;
+		constexpr BSTArrayBase(BSTArrayBase&& a_rhs) noexcept :
+			_size(a_rhs.size())
+		{
+			a_rhs._size = 0;
+		}
 
 		inline ~BSTArrayBase() noexcept { _size = 0; }
 
 		BSTArrayBase& operator=(const BSTArrayBase&) noexcept = default;
-		BSTArrayBase& operator=(BSTArrayBase&&) noexcept = default;
+		BSTArrayBase& operator=(BSTArrayBase&& a_rhs) noexcept
+		{
+			_size = a_rhs.size();
+			a_rhs._size = 0;
+			return *this;
+		}
 
 		[[nodiscard]] constexpr bool      empty() const noexcept { return _size == 0; }
 		[[nodiscard]] constexpr size_type size() const noexcept { return _size; }
@@ -666,7 +675,14 @@ namespace RE
 				const auto oldCapacity = capacity();
 				if (newData) {
 					const auto bytesToCopy = (std::min)(oldCapacity, a_newCapacity) * sizeof(value_type);
+#ifdef __clang__
+#	pragma clang diagnostic push
+#	pragma clang diagnostic ignored "-Wnontrivial-memaccess"
+#endif
 					std::memcpy(newData, oldData, bytesToCopy);
+#ifdef __clang__
+#	pragma clang diagnostic pop
+#endif
 				}
 				deallocate(oldData);
 			}

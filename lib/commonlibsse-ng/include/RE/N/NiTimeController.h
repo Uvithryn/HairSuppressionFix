@@ -70,6 +70,7 @@ namespace RE
 		static void StartAnimations(NiObjectNET* a_target);
 
 		[[nodiscard]] constexpr NiTimeController* GetNext() const noexcept { return next.get(); }
+		void                                      SetNext(NiTimeController* a_next);
 
 		// members
 		REX::EnumSet<Flag, std::uint16_t> flags;             // 10
@@ -89,9 +90,6 @@ namespace RE
 	private:
 		NiTimeController* ctor();
 		void              dtor();
-
-	private:
-		KEEP_FOR_RE()
 	};
 	static_assert(sizeof(NiTimeController) == 0x48);
 }

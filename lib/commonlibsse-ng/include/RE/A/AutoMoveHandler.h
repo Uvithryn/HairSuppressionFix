@@ -13,14 +13,10 @@ namespace RE
 		~AutoMoveHandler() override;  // 00
 
 		// override (PlayerInputHandler)
-		bool CanProcess(InputEvent* a_event) override;                                  // 01
+		bool CanProcess(InputEvent* a_event) override;  // 01
+#ifdef EXCLUSIVE_SKYRIM_VR
 		void ProcessButton(ButtonEvent* a_event, PlayerControlsData* a_data) override;  // 04
-	private:
-		KEEP_FOR_RE()
-	};
-#if defined(EXCLUSIVE_SKYRIM_VR)
-	static_assert(sizeof(AutoMoveHandler) == 0x28);
-#else
-	static_assert(sizeof(AutoMoveHandler) == 0x10);
 #endif
+	};
+	STATIC_ASSERT_SIZE(AutoMoveHandler, 0x10, 0x10, 0x28, 0x10);
 }

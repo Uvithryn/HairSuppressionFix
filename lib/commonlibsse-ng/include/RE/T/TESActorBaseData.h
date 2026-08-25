@@ -122,15 +122,21 @@ namespace RE
 			return func(this);
 		}
 
+		void SetActorBaseFlag(ACTOR_BASE_DATA::Flag a_flag, bool a_set, bool a_notify)
+		{
+			using func_t = decltype(&TESActorBaseData::SetActorBaseFlag);
+			static REL::Relocation<func_t> func{ RELOCATION_ID(14261, 14383) };
+			return func(this, a_flag, a_set, a_notify);
+		}
+
 		// members
 		ACTOR_BASE_DATA        actorData;         // 08
 		TESLevItem*            deathItem;         // 20 - INAM
 		BGSVoiceType*          voiceType;         // 28 - VTCK
 		TESForm*               baseTemplateForm;  // 30 - TPLT
-		TESForm**              templateForms;     // 38
+		std::uint32_t          changeFlags;       // 38
+		std::uint32_t          pad3C;             // 3C
 		BSTArray<FACTION_RANK> factions;          // 40
-	private:
-		KEEP_FOR_RE()
 	};
 	static_assert(sizeof(TESActorBaseData) == 0x58);
 }

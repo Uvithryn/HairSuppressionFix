@@ -84,11 +84,11 @@ namespace RE
 		~TESObjectLAND() override;  // 00
 
 		// override (TESForm)
-		bool     Load(TESFile* a_mod) override;                                                        // 06 - { return true; }
-		TESForm* CreateDuplicateForm(bool a_createEditorID, void* a_arg2) override;                    // 09
-		void     SetAltered(bool a_set) override;                                                      // 24
-		bool     BelongsInGroup(FORM* a_form, bool a_allowParentGroups, bool a_currentOnly) override;  // 30
-		void     CreateGroupData(FORM* a_form, FORM_GROUP* a_group) override;                          // 31
+		bool     Load(TESFile* a_mod) override;                                                                      // 06 - { return true; }
+		TESForm* CreateDuplicateForm(bool a_createEditorID, NiTPointerMap<TESForm*, TESForm*>* a_copyMap) override;  // 09
+		void     SetAltered(bool a_set) override;                                                                    // 24
+		bool     BelongsInGroup(FORM* a_form, bool a_allowParentGroups, bool a_currentOnly) override;                // 30
+		void     CreateGroupData(FORM* a_form, FORM_GROUP* a_group) override;                                        // 31
 
 		// override (TESChildCell)
 		[[nodiscard]] TESObjectCELL* GetSaveParentCell() override;  // 01 - { return parentCell; }
@@ -99,8 +99,6 @@ namespace RE
 		TESObjectCELL*        parentCell;      // 30
 		NiPointer<QueuedFile> queuedTextures;  // 38
 		LoadedLandData*       loadedData;      // 40
-	private:
-		KEEP_FOR_RE()
 	};
 	static_assert(sizeof(TESObjectLAND) == 0x48);
 }

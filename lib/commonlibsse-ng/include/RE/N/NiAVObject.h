@@ -9,6 +9,7 @@
 #include "RE/N/NiObjectNET.h"
 #include "RE/N/NiSmartPointer.h"
 #include "RE/N/NiTransform.h"
+#include "REL/RuntimeDataAccessors.h"
 
 namespace RE
 {
@@ -36,8 +37,6 @@ namespace RE
 
 		float                             time;   // 0
 		REX::EnumSet<Flag, std::uint32_t> flags;  // 4
-	private:
-		KEEP_FOR_RE()
 	};
 	static_assert(sizeof(NiUpdateData) == 0x8);
 
@@ -48,8 +47,6 @@ namespace RE
 
 		// add
 		virtual bool operator()(NiAVObject* a_object);  // 01
-	private:
-		KEEP_FOR_RE()
 	};
 	static_assert(sizeof(PerformOpFunc) == 0x8);
 
@@ -60,6 +57,10 @@ namespace RE
 		inline static constexpr auto Ni_RTTI = NiRTTI_NiAVObject;
 		inline static constexpr auto VTABLE = VTABLE_NiAVObject;
 
+		/*
+		 *	These flags were taken from Fallout 4, but FO4 has a 64-bit flags type, and many of the flags are in
+		 *	different locations. Some names could be wrong.
+		 */
 		enum class Flag
 		{
 			kNone = 0,
@@ -74,7 +75,7 @@ namespace RE
 			kSaveExternalGeometryData = 1 << 9,
 			kNoDecals = 1 << 10,
 			kAlwaysDraw = 1 << 11,
-			kMeshLOD = 1 << 12,
+			kPreProcessedNode = 1 << 12,
 			kFixedBound = 1 << 13,
 			kTopFadeNode = 1 << 14,
 			kIgnoreFade = 1 << 15,
@@ -82,13 +83,16 @@ namespace RE
 			kNoAnimSyncY = 1 << 17,
 			kNoAnimSyncZ = 1 << 18,
 			kNoAnimSyncS = 1 << 19,
-			kNoDismember = 1 << 20,
+			kNotVisible = 1 << 20,
 			kNoDismemberValidity = 1 << 21,
 			kRenderUse = 1 << 22,
-			kMaterialsApplied = 1 << 23,
+			kShadowReceiver = 1 << 23,
 			kHighDetail = 1 << 24,
 			kForceUpdate = 1 << 25,
-			kPreProcessedNode = 1 << 26
+			kAccumulated = 1 << 26,
+			kMeshLOD = 1 << 27,
+			kUnk28 = 1 << 28,
+			kShadowCaster = 1 << 29
 		};
 
 		~NiAVObject() override;  // 00
@@ -121,9 +125,8 @@ namespace RE
 		SKYRIM_REL_VR_VIRTUAL void        UpdateTransformAndBounds(NiUpdateData& a_data);                                                     // 31
 		SKYRIM_REL_VR_VIRTUAL void        PreAttachUpdate(NiNode* a_parent, NiUpdateData& a_data);                                            // 32
 		SKYRIM_REL_VR_VIRTUAL void        PostAttachUpdate();                                                                                 // 33
-		SKYRIM_REL_VR_VIRTUAL void        OnVisible(NiCullingProcess& a_process);                                                             // 34 - { return; }
+		SKYRIM_REL_VR_VIRTUAL void        OnVisible(NiCullingProcess& a_process, std::int32_t a_alphaGroupIndex);                             // 34 - { return; }
 
-		[[nodiscard]] NiAVObject*         Clone();
 		void                              CullGeometry(bool a_cull);
 		void                              CullNode(bool a_cull);
 		[[nodiscard]] bool                GetAppCulled() const;
@@ -147,16 +150,13 @@ namespace RE
 		void                              UpdateHairColor(const NiColor& a_color);
 		void                              UpdateMaterialAlpha(float a_alpha, bool a_doOnlySkin);
 		void                              UpdateRigidConstraints(bool a_enable, std::uint8_t a_arg2 = 1, std::uint32_t a_arg3 = 1);
+		int                               IsVisualObjectI();
+		void                              Cull(NiCullingProcess* a_culler, std::int32_t a_alphaGroupIndex);
 
-		[[nodiscard]] inline REX::EnumSet<Flag, std::uint32_t>& GetFlags() noexcept
-		{
-			return REL::RelocateMember<REX::EnumSet<Flag, std::uint32_t>>(this, 0x0F4, 0x10C);
-		}
+		using NiAVObjectFlags = REX::EnumSet<Flag, std::uint32_t>;
+		RUNTIME_DATA_ACCESSOR_EX(NiAVObjectFlags, GetFlags, 0x0F4, 0x10C)
 
-		[[nodiscard]] inline const REX::EnumSet<Flag, std::uint32_t>& GetFlags() const noexcept
-		{
-			return REL::RelocateMember<REX::EnumSet<Flag, std::uint32_t>>(this, 0x0F4, 0x10C);
-		}
+		RUNTIME_DATA_ACCESSOR_EX(std::uint8_t, GetFlags02, 0x109, 0x121)  // flags02
 
 		BSLightingShaderProperty* temp_nicast(BSGeometry* a_geometry);
 
@@ -178,8 +178,6 @@ namespace RE
 		std::uint8_t                      flags02;                  // 109
 		std::uint16_t                     unk10A;                   // 10A
 		std::uint32_t                     pad10C;                   // 10C
-	private:
-		KEEP_FOR_RE()
 	};
 	static_assert(sizeof(NiAVObject) == 0x110);
 #elif defined(EXCLUSIVE_SKYRIM_VR)

@@ -1,4 +1,3 @@
-#pragma once
 #include "RE/I/InventoryChanges.h"
 #include "RE/A/Actor.h"
 #include "RE/F/FormTraits.h"
@@ -72,6 +71,13 @@ namespace RE
 		using func_t = decltype(&InventoryChanges::GetNextUniqueID);
 		static REL::Relocation<func_t> func{ RELOCATION_ID(15908, 16148) };
 		return func(this);
+	}
+
+	RE::ExtraDataList* InventoryChanges::EnchantObject(RE::TESBoundObject* a_obj, RE::ExtraDataList* a_extraList, RE::EnchantmentItem* a_enchantment, uint16_t a_charge)
+	{
+		using func_t = decltype(&InventoryChanges::EnchantObject);
+		static REL::Relocation<func_t> func{ RELOCATION_ID(15906, 16146) };
+		return func(this, a_obj, a_extraList, a_enchantment, a_charge);
 	}
 
 	std::uint32_t InventoryChanges::GetWornMask()

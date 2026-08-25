@@ -1,0 +1,13 @@
+{
+    recheck = false,
+    options = {
+        mode = "release",
+        skyrim_ae = true,
+        skyrim_vr = true,
+        skyrim_se = true
+    },
+    mtimes = {
+        ["lib\\CommonLibSSE-NG\\xmake.lua"] = 1787659098,
+        ["xmake.lua"] = 1787661552
+    }
+}

@@ -1,0 +1,73 @@
+{
+    skyrim_se = {
+        defines = "ENABLE_SKYRIM_SE=1",
+        __sourceinfo_showmenu = { },
+        __sourceinfo_description = {
+            ["Enable runtime support for Skyrim Special Edition"] = {
+                line = 29,
+                file = [[.\xmake.lua]]
+            },
+            ["Enable runtime support for Skyrim SE"] = {
+                line = 36,
+                file = [[.\lib\CommonLibSSE-NG\xmake.lua]]
+            }
+        },
+        showmenu = true,
+        description = "Enable runtime support for Skyrim Special Edition",
+        __scriptdir = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\projects\HairSuppressionFix\lib\CommonLibSSE-NG]],
+        default = true,
+        __sourceinfo_defines = {
+            ["ENABLE_SKYRIM_SE=1"] = {
+                line = 37,
+                file = [[.\lib\CommonLibSSE-NG\xmake.lua]]
+            }
+        },
+        __sourceinfo_default = { }
+    },
+    skyrim_vr = {
+        defines = "ENABLE_SKYRIM_VR=1",
+        __sourceinfo_showmenu = { },
+        __sourceinfo_description = {
+            ["Enable runtime support for Skyrim VR"] = {
+                line = 41,
+                file = [[.\xmake.lua]]
+            }
+        },
+        showmenu = true,
+        description = "Enable runtime support for Skyrim VR",
+        __scriptdir = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\projects\HairSuppressionFix\lib\CommonLibSSE-NG]],
+        default = true,
+        __sourceinfo_defines = {
+            ["ENABLE_SKYRIM_VR=1"] = {
+                line = 49,
+                file = [[.\lib\CommonLibSSE-NG\xmake.lua]]
+            }
+        },
+        __sourceinfo_default = { }
+    },
+    skyrim_ae = {
+        defines = "ENABLE_SKYRIM_AE=1",
+        __sourceinfo_showmenu = { },
+        __sourceinfo_description = {
+            ["Enable runtime support for Skyrim Anniversary Edition"] = {
+                line = 35,
+                file = [[.\xmake.lua]]
+            },
+            ["Enable runtime support for Skyrim AE"] = {
+                line = 42,
+                file = [[.\lib\CommonLibSSE-NG\xmake.lua]]
+            }
+        },
+        showmenu = true,
+        description = "Enable runtime support for Skyrim Anniversary Edition",
+        __scriptdir = [[G:\SkyrimSE_MO2\tools\SKSE_Dev\projects\HairSuppressionFix\lib\CommonLibSSE-NG]],
+        default = true,
+        __sourceinfo_defines = {
+            ["ENABLE_SKYRIM_AE=1"] = {
+                line = 43,
+                file = [[.\lib\CommonLibSSE-NG\xmake.lua]]
+            }
+        },
+        __sourceinfo_default = { }
+    }
+}
